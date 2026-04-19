@@ -1,0 +1,22 @@
+true / predicted,Mixture (faba)_Fanfare_FB_B,Mixture (faba-wheat)_Anabel&Fanfare_Mix_B_2,Mixture (faba-wheat)_Sorbas&Fanfare_Mix_B_10,Mixture (wheat)_Anabel_SW_2,Mixture (wheat)_Sorbas_SW_10,Potato_Belana,Potato_Gala,Soybean_Eiko,Soybean_Minngold,Sugar Beet_BTS 440_Herbicide 100%,Sugar Beet_BTS 440_Herbicide: 0%,Sugar Beet_BTS 440_Herbicide: 50%,Sugar Beet_BTS 440_Herbicide: 75%,Sugar Corn_Caramelo,Sugar Corn_Khan,Sugar Corn_Mirza,Sugar Corn_PopcornRobust,Summerwheat_Granus_150,Summerwheat_Granus_250,Summerwheat_Granus_350,Summerwheat_Granus_450
+Mixture (faba)_Fanfare_FB_B,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Mixture (faba-wheat)_Anabel&Fanfare_Mix_B_2,0,17,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Mixture (faba-wheat)_Sorbas&Fanfare_Mix_B_10,0,0,18,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Mixture (wheat)_Anabel_SW_2,0,1,2,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Mixture (wheat)_Sorbas_SW_10,0,0,2,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Potato_Belana,0,0,0,0,0,74,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Potato_Gala,0,0,0,0,0,0,77,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Soybean_Eiko,0,0,0,0,0,0,0,38,0,0,0,0,0,0,0,0,0,0,0,0,0
+Soybean_Minngold,0,0,0,0,0,0,0,0,38,0,0,0,0,0,0,0,0,0,0,0,0
+Sugar Beet_BTS 440_Herbicide 100%,0,0,0,0,0,0,0,0,0,38,0,0,0,0,0,0,0,0,0,0,0
+Sugar Beet_BTS 440_Herbicide: 0%,0,0,0,0,0,0,0,0,0,0,38,0,0,0,0,0,0,0,0,0,0
+Sugar Beet_BTS 440_Herbicide: 50%,0,0,0,0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,0
+Sugar Beet_BTS 440_Herbicide: 75%,0,0,0,0,0,0,0,0,0,0,0,1,37,0,0,0,0,0,0,0,0
+Sugar Corn_Caramelo,0,0,0,0,0,0,0,0,0,0,0,0,0,38,1,0,0,0,0,0,0
+Sugar Corn_Khan,0,0,0,0,0,0,0,0,0,0,0,0,0,1,33,2,2,0,0,1,0
+Sugar Corn_Mirza,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,36,1,0,0,0,0
+Sugar Corn_PopcornRobust,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,37,0,0,0,0
+Summerwheat_Granus_150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,3,3,1
+Summerwheat_Granus_250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,36,1,0
+Summerwheat_Granus_350,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,35,3
+Summerwheat_Granus_450,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4,33

@@ -1,0 +1,22 @@
+class,precision,recall,f1_score,support
+Mixture (faba)_Fanfare_FB_B,0.85,0.8947,0.8718,19
+Mixture (faba-wheat)_Anabel&Fanfare_Mix_B_2,0.9375,0.7895,0.8571,19
+Mixture (faba-wheat)_Sorbas&Fanfare_Mix_B_10,0.7,0.7368,0.7179,19
+Mixture (wheat)_Anabel_SW_2,0.9091,1.0,0.9524,10
+Mixture (wheat)_Sorbas_SW_10,0.6667,0.4,0.5,10
+Potato_Belana,0.9103,0.9221,0.9161,77
+Potato_Gala,0.8333,0.974,0.8982,77
+Soybean_Eiko,1.0,0.9737,0.9867,38
+Soybean_Minngold,0.9737,0.9737,0.9737,38
+Sugar Beet_BTS 440_Herbicide 100%,0.9459,0.9211,0.9333,38
+Sugar Beet_BTS 440_Herbicide: 0%,1.0,1.0,1.0,38
+Sugar Beet_BTS 440_Herbicide: 50%,0.9268,0.9744,0.95,39
+Sugar Beet_BTS 440_Herbicide: 75%,0.9268,1.0,0.962,38
+Sugar Corn_Caramelo,0.5238,0.5641,0.5432,39
+Sugar Corn_Khan,0.5152,0.4359,0.4722,39
+Sugar Corn_Mirza,0.6111,0.5789,0.5946,38
+Sugar Corn_PopcornRobust,0.6857,0.6316,0.6575,38
+Summerwheat_Granus_150,0.7317,0.7692,0.75,39
+Summerwheat_Granus_250,0.5897,0.6053,0.5974,38
+Summerwheat_Granus_350,0.5294,0.4615,0.4932,39
+Summerwheat_Granus_450,0.7714,0.7105,0.7397,38

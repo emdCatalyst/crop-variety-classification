@@ -1,0 +1,73 @@
+{
+  "run": {
+    "timestamp": "2026-04-12T23:03:50.793709",
+    "test_mode": false,
+    "device": "cpu",
+    "run_dir": "./results/run_20260412_230352_ep60_plots68_p48_ps32_lr0.001_lstm128"
+  },
+  "dataset": {
+    "plots_dir": "./mustc_plots",
+    "labels_csv": "./plot_metadata.csv",
+    "plots_loaded": 68,
+    "num_classes": 21,
+    "classes": [
+      "Intercrop_Anabel",
+      "Intercrop_Anabel_Fanfare",
+      "Intercrop_Fanfare",
+      "Intercrop_Sorbas",
+      "Intercrop_Sorbas_Fanfare",
+      "Maize_Caramelo",
+      "Maize_Khan",
+      "Maize_Mirza",
+      "Maize_Popcorn_Robust",
+      "Potato_Belana",
+      "Potato_Gala",
+      "Soybean_Eiko",
+      "Soybean_Minngold",
+      "SugarBeet_BTS440_H0",
+      "SugarBeet_BTS440_H100",
+      "SugarBeet_BTS440_H50",
+      "SugarBeet_BTS440_H75",
+      "Wheat_Granus_150",
+      "Wheat_Granus_250",
+      "Wheat_Granus_350",
+      "Wheat_Granus_450"
+    ],
+    "train_samples": 2611,
+    "val_samples": 653
+  },
+  "model": {
+    "architecture": "CNN+LSTM",
+    "trainable_params": 345877,
+    "in_channels": 13,
+    "cnn_out": 64,
+    "lstm_hidden": 128,
+    "lstm_layers": 2,
+    "dropout": 0.3
+  },
+  "training": {
+    "epochs_max": 60,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "early_stop_patience": 15,
+    "optimiser": "AdamW",
+    "lr_scheduler": "CosineAnnealingLR",
+    "loss": "CrossEntropyLoss(label_smoothing=0.05)"
+  },
+  "preprocessing": {
+    "num_timesteps": 4,
+    "patch_size": 32,
+    "patches_per_plot": 48,
+    "bands_raw": 10,
+    "bands_computed": 3,
+    "bands_total": 13,
+    "vi_added": [
+      "NDVI",
+      "NDRE",
+      "SAVI"
+    ],
+    "normalisation": "divide by 10000, clip [0,1]",
+    "seed": 42
+  }
+}

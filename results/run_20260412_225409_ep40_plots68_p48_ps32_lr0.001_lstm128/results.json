@@ -1,0 +1,160 @@
+{
+  "run_timestamp": "2026-04-12T22:54:07.696315",
+  "training_seconds": 152,
+  "epochs_completed": 40,
+  "best_f1_epoch": 39,
+  "models": [
+    {
+      "model": "Random Forest",
+      "accuracy": 0.6953,
+      "f1_weighted": 0.6926,
+      "f1_macro": 0.7098,
+      "precision_w": 0.7064,
+      "recall_w": 0.6953
+    },
+    {
+      "model": "SVM",
+      "accuracy": 0.7504,
+      "f1_weighted": 0.7486,
+      "f1_macro": 0.7768,
+      "precision_w": 0.7542,
+      "recall_w": 0.7504
+    },
+    {
+      "model": "CNN+LSTM",
+      "accuracy": 0.7856,
+      "f1_weighted": 0.7798,
+      "f1_macro": 0.7923,
+      "precision_w": 0.7829,
+      "recall_w": 0.7856
+    }
+  ],
+  "cnn_lstm_per_class": {
+    "Intercrop_Anabel": {
+      "precision": 0.875,
+      "recall": 0.7,
+      "f1-score": 0.7778,
+      "support": 10.0
+    },
+    "Intercrop_Anabel_Fanfare": {
+      "precision": 0.8095,
+      "recall": 0.8947,
+      "f1-score": 0.85,
+      "support": 19.0
+    },
+    "Intercrop_Fanfare": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 19.0
+    },
+    "Intercrop_Sorbas": {
+      "precision": 0.8889,
+      "recall": 0.8,
+      "f1-score": 0.8421,
+      "support": 10.0
+    },
+    "Intercrop_Sorbas_Fanfare": {
+      "precision": 0.8947,
+      "recall": 0.8947,
+      "f1-score": 0.8947,
+      "support": 19.0
+    },
+    "Maize_Caramelo": {
+      "precision": 0.375,
+      "recall": 0.2368,
+      "f1-score": 0.2903,
+      "support": 38.0
+    },
+    "Maize_Khan": {
+      "precision": 0.5476,
+      "recall": 0.6053,
+      "f1-score": 0.575,
+      "support": 38.0
+    },
+    "Maize_Mirza": {
+      "precision": 0.5636,
+      "recall": 0.8158,
+      "f1-score": 0.6667,
+      "support": 38.0
+    },
+    "Maize_Popcorn_Robust": {
+      "precision": 0.5161,
+      "recall": 0.4211,
+      "f1-score": 0.4638,
+      "support": 38.0
+    },
+    "Potato_Belana": {
+      "precision": 0.9367,
+      "recall": 0.961,
+      "f1-score": 0.9487,
+      "support": 77.0
+    },
+    "Potato_Gala": {
+      "precision": 0.9359,
+      "recall": 0.9481,
+      "f1-score": 0.9419,
+      "support": 77.0
+    },
+    "Soybean_Eiko": {
+      "precision": 0.9744,
+      "recall": 0.9744,
+      "f1-score": 0.9744,
+      "support": 39.0
+    },
+    "Soybean_Minngold": {
+      "precision": 0.9737,
+      "recall": 0.9737,
+      "f1-score": 0.9737,
+      "support": 38.0
+    },
+    "SugarBeet_BTS440_H0": {
+      "precision": 1.0,
+      "recall": 0.9,
+      "f1-score": 0.9474,
+      "support": 10.0
+    },
+    "SugarBeet_BTS440_H100": {
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1-score": 0.8,
+      "support": 10.0
+    },
+    "SugarBeet_BTS440_H50": {
+      "precision": 0.8182,
+      "recall": 0.9,
+      "f1-score": 0.8571,
+      "support": 10.0
+    },
+    "SugarBeet_BTS440_H75": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "Wheat_Granus_150": {
+      "precision": 0.7234,
+      "recall": 0.8947,
+      "f1-score": 0.8,
+      "support": 38.0
+    },
+    "Wheat_Granus_250": {
+      "precision": 0.6757,
+      "recall": 0.641,
+      "f1-score": 0.6579,
+      "support": 39.0
+    },
+    "Wheat_Granus_350": {
+      "precision": 0.641,
+      "recall": 0.6579,
+      "f1-score": 0.6494,
+      "support": 38.0
+    },
+    "Wheat_Granus_450": {
+      "precision": 0.8571,
+      "recall": 0.6316,
+      "f1-score": 0.7273,
+      "support": 38.0
+    }
+  }
+}

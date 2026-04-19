@@ -1,0 +1,22 @@
+true / predicted,Intercrop_Anabel,Intercrop_Anabel_Fanfare,Intercrop_Fanfare,Intercrop_Sorbas,Intercrop_Sorbas_Fanfare,Maize_Caramelo,Maize_Khan,Maize_Mirza,Maize_Popcorn_Robust,Potato_Belana,Potato_Gala,Soybean_Eiko,Soybean_Minngold,SugarBeet_BTS440_H0,SugarBeet_BTS440_H100,SugarBeet_BTS440_H50,SugarBeet_BTS440_H75,Wheat_Granus_150,Wheat_Granus_250,Wheat_Granus_350,Wheat_Granus_450
+Intercrop_Anabel,8,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Intercrop_Anabel_Fanfare,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Intercrop_Fanfare,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Intercrop_Sorbas,1,1,0,7,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Intercrop_Sorbas_Fanfare,0,2,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Maize_Caramelo,0,0,0,0,0,37,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+Maize_Khan,0,0,0,0,0,0,36,2,0,0,0,0,0,0,0,0,0,0,0,0,0
+Maize_Mirza,0,0,0,0,0,0,0,38,0,0,0,0,0,0,0,0,0,0,0,0,0
+Maize_Popcorn_Robust,0,0,0,0,0,1,1,0,36,0,0,0,0,0,0,0,0,0,0,0,0
+Potato_Belana,0,0,0,0,0,0,0,0,0,77,0,0,0,0,0,0,0,0,0,0,0
+Potato_Gala,0,0,0,0,0,0,0,0,0,1,75,0,0,0,0,0,1,0,0,0,0
+Soybean_Eiko,0,0,0,0,0,0,0,0,0,0,0,38,1,0,0,0,0,0,0,0,0
+Soybean_Minngold,0,0,0,0,0,0,0,0,0,0,0,0,37,0,0,0,1,0,0,0,0
+SugarBeet_BTS440_H0,0,0,0,0,0,0,0,0,0,0,1,0,0,9,0,0,0,0,0,0,0
+SugarBeet_BTS440_H100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,3,0,0,0,0,0
+SugarBeet_BTS440_H50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0
+SugarBeet_BTS440_H75,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,8,0,0,0,0
+Wheat_Granus_150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,1,0,0
+Wheat_Granus_250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,30,5,0
+Wheat_Granus_350,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,27,3
+Wheat_Granus_450,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,5,30

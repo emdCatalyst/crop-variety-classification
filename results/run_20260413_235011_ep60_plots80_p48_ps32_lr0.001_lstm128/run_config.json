@@ -1,0 +1,73 @@
+{
+  "run": {
+    "timestamp": "2026-04-13T23:50:03.360865",
+    "test_mode": false,
+    "device": "cpu",
+    "run_dir": "./results/run_20260413_235011_ep60_plots80_p48_ps32_lr0.001_lstm128"
+  },
+  "dataset": {
+    "plots_dir": "./mustc_plots",
+    "labels_csv": "./metadata/plot_metadata.csv",
+    "plots_loaded": 80,
+    "num_classes": 21,
+    "classes": [
+      "Mixture (faba)_Fanfare_FB_B",
+      "Mixture (faba-wheat)_Anabel&Fanfare_Mix_B_2",
+      "Mixture (faba-wheat)_Sorbas&Fanfare_Mix_B_10",
+      "Mixture (wheat)_Anabel_SW_2",
+      "Mixture (wheat)_Sorbas_SW_10",
+      "Potato_Belana",
+      "Potato_Gala",
+      "Soybean_Eiko",
+      "Soybean_Minngold",
+      "Sugar Beet_BTS 440_Herbicide 100%",
+      "Sugar Beet_BTS 440_Herbicide: 0%",
+      "Sugar Beet_BTS 440_Herbicide: 50%",
+      "Sugar Beet_BTS 440_Herbicide: 75%",
+      "Sugar Corn_Caramelo",
+      "Sugar Corn_Khan",
+      "Sugar Corn_Mirza",
+      "Sugar Corn_PopcornRobust",
+      "Summerwheat_Granus_150",
+      "Summerwheat_Granus_250",
+      "Summerwheat_Granus_350",
+      "Summerwheat_Granus_450"
+    ],
+    "train_samples": 3072,
+    "val_samples": 768
+  },
+  "model": {
+    "architecture": "CNN+LSTM",
+    "trainable_params": 346006,
+    "in_channels": 13,
+    "cnn_out": 64,
+    "lstm_hidden": 128,
+    "lstm_layers": 2,
+    "dropout": 0.3
+  },
+  "training": {
+    "epochs_max": 60,
+    "batch_size": 32,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "early_stop_patience": 15,
+    "optimiser": "AdamW",
+    "lr_scheduler": "CosineAnnealingLR",
+    "loss": "CrossEntropyLoss(label_smoothing=0.05)"
+  },
+  "preprocessing": {
+    "num_timesteps": 12,
+    "patch_size": 32,
+    "patches_per_plot": 48,
+    "bands_raw": 10,
+    "bands_computed": 3,
+    "bands_total": 13,
+    "vi_added": [
+      "NDVI",
+      "NDRE",
+      "SAVI"
+    ],
+    "normalisation": "divide by 10000, clip [0,1]",
+    "seed": 42
+  }
+}

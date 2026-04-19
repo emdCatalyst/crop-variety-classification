@@ -1,0 +1,160 @@
+{
+  "run_timestamp": "2026-04-13T23:50:03.360865",
+  "training_seconds": 821,
+  "epochs_completed": 60,
+  "best_f1_epoch": 56,
+  "models": [
+    {
+      "model": "Random Forest",
+      "accuracy": 0.7969,
+      "f1_weighted": 0.7927,
+      "f1_macro": 0.7794,
+      "precision_w": 0.7921,
+      "recall_w": 0.7969
+    },
+    {
+      "model": "SVM",
+      "accuracy": 0.8477,
+      "f1_weighted": 0.8477,
+      "f1_macro": 0.8435,
+      "precision_w": 0.8492,
+      "recall_w": 0.8477
+    },
+    {
+      "model": "CNN+LSTM",
+      "accuracy": 0.9479,
+      "f1_weighted": 0.9478,
+      "f1_macro": 0.9355,
+      "precision_w": 0.9499,
+      "recall_w": 0.9479
+    }
+  ],
+  "cnn_lstm_per_class": {
+    "Mixture (faba)_Fanfare_FB_B": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 19.0
+    },
+    "Mixture (faba-wheat)_Anabel&Fanfare_Mix_B_2": {
+      "precision": 0.9444,
+      "recall": 0.8947,
+      "f1-score": 0.9189,
+      "support": 19.0
+    },
+    "Mixture (faba-wheat)_Sorbas&Fanfare_Mix_B_10": {
+      "precision": 0.7826,
+      "recall": 0.9474,
+      "f1-score": 0.8571,
+      "support": 19.0
+    },
+    "Mixture (wheat)_Anabel_SW_2": {
+      "precision": 0.875,
+      "recall": 0.7,
+      "f1-score": 0.7778,
+      "support": 10.0
+    },
+    "Mixture (wheat)_Sorbas_SW_10": {
+      "precision": 1.0,
+      "recall": 0.8,
+      "f1-score": 0.8889,
+      "support": 10.0
+    },
+    "Potato_Belana": {
+      "precision": 0.9867,
+      "recall": 0.961,
+      "f1-score": 0.9737,
+      "support": 77.0
+    },
+    "Potato_Gala": {
+      "precision": 0.9625,
+      "recall": 1.0,
+      "f1-score": 0.9809,
+      "support": 77.0
+    },
+    "Soybean_Eiko": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 38.0
+    },
+    "Soybean_Minngold": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 38.0
+    },
+    "Sugar Beet_BTS 440_Herbicide 100%": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 38.0
+    },
+    "Sugar Beet_BTS 440_Herbicide: 0%": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 38.0
+    },
+    "Sugar Beet_BTS 440_Herbicide: 50%": {
+      "precision": 0.975,
+      "recall": 1.0,
+      "f1-score": 0.9873,
+      "support": 39.0
+    },
+    "Sugar Beet_BTS 440_Herbicide: 75%": {
+      "precision": 1.0,
+      "recall": 0.9737,
+      "f1-score": 0.9867,
+      "support": 38.0
+    },
+    "Sugar Corn_Caramelo": {
+      "precision": 0.9744,
+      "recall": 0.9744,
+      "f1-score": 0.9744,
+      "support": 39.0
+    },
+    "Sugar Corn_Khan": {
+      "precision": 0.9429,
+      "recall": 0.8462,
+      "f1-score": 0.8919,
+      "support": 39.0
+    },
+    "Sugar Corn_Mirza": {
+      "precision": 0.9231,
+      "recall": 0.9474,
+      "f1-score": 0.9351,
+      "support": 38.0
+    },
+    "Sugar Corn_PopcornRobust": {
+      "precision": 0.925,
+      "recall": 0.9737,
+      "f1-score": 0.9487,
+      "support": 38.0
+    },
+    "Summerwheat_Granus_150": {
+      "precision": 0.9412,
+      "recall": 0.8205,
+      "f1-score": 0.8767,
+      "support": 39.0
+    },
+    "Summerwheat_Granus_250": {
+      "precision": 0.9,
+      "recall": 0.9474,
+      "f1-score": 0.9231,
+      "support": 38.0
+    },
+    "Summerwheat_Granus_350": {
+      "precision": 0.7955,
+      "recall": 0.8974,
+      "f1-score": 0.8434,
+      "support": 39.0
+    },
+    "Summerwheat_Granus_450": {
+      "precision": 0.8919,
+      "recall": 0.8684,
+      "f1-score": 0.88,
+      "support": 38.0
+    }
+  }
+}

@@ -1,0 +1,6 @@
+class,precision,recall,f1_score,support
+Intercrop_Sorbas,0.0,0.0,0.0,1
+Intercrop_Sorbas_Fanfare,0.0,0.0,0.0,1
+Potato_Belana,0.0,0.0,0.0,1
+Potato_Gala,0.0,0.0,0.0,1
+Wheat_Granus_450,0.0,0.0,0.0,0

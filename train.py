@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Crop Variety Classification — MuST-C Dataset
+Crop Variety Classification
 CNN + LSTM hybrid model with Random Forest and SVM baselines.
 
 Usage:
@@ -35,7 +35,6 @@ try:
 except ImportError:
     sys.exit("rasterio not found. Run: pip install rasterio")
 
-# CONFIG
 CONFIG = {
     "plots_dir":        "./mustc_plots",
     "labels_csv":       "./metadata/plot_metadata.csv",
@@ -60,7 +59,6 @@ np.random.seed(CONFIG["seed"])
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device: {DEVICE}")
 
-# RUN DIRECTORY
 
 def make_run_dir(config, num_plots_loaded, test_mode):
     ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -162,7 +160,6 @@ def save_results_json(run_dir, baseline_results, dl_acc, dl_f1,
             "recall_w":     round(rec,  4),
         }
 
-    # Per-class metrics for CNN+LSTM
     present       = sorted(set(y_true) | set(y_pred_dl))
     present_names = [classes[i] for i in present]
     per_class_raw = classification_report(
@@ -234,9 +231,6 @@ def save_confusion_csv(run_dir, y_true, y_pred, classes, model_name):
     df.to_csv(os.path.join(run_dir, fname))
     print(f"Saved {fname}")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# DATA LOADING
-# ─────────────────────────────────────────────────────────────────────────────
 
 def parse_date(folder_name):
     base = folder_name.split("-")[0]
@@ -273,7 +267,6 @@ def read_tif(path):
         data = src.read().astype(np.float32)
     if data.max() > 1.5:
         data = data / 10000.0
-    # Replace NoData (NaN, inf, negative) with 0 before any further processing
     data = np.nan_to_num(data, nan=0.0, posinf=1.0, neginf=0.0)
     return np.clip(data, 0.0, 1.0)
 
@@ -328,9 +321,6 @@ def load_dataset(config, max_plots=None):
             np.array(y_list, dtype=np.int64),
             classes, n_loaded)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# DATASET & DATALOADER
-# ─────────────────────────────────────────────────────────────────────────────
 
 class MuSTCDataset(Dataset):
     def __init__(self, X, y):
@@ -365,9 +355,6 @@ def make_loaders(X, y, config):
     return tr, va, X_tr, X_val, y_tr, y_val
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# TRAINING
-# ─────────────────────────────────────────────────────────────────────────────
 
 def run_epoch(model, loader, criterion, optimiser, training):
     model.train(training)
@@ -606,6 +593,6 @@ def main(test_mode=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--test", action="store_true",
-                        help="Quick sanity check: 5 plots, 3 epochs")
+                        help="Quick check: 5 plots, 3 epochs")
     args = parser.parse_args()
     main(test_mode=args.test)

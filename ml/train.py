@@ -7,7 +7,7 @@ Usage:
     python3 train.py              # full training
     python3 train.py --test       # sanity check on 5 plots, 3 epochs
 """
-from model import CropCNNLSTM, CNNEncoder
+from .model import CropCNNLSTM, CNNEncoder
 import os, sys, glob, warnings, argparse, json
 from datetime import datetime
 import numpy as np

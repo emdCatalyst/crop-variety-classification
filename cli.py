@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
 CLI wrapper for MuST-C inference.
-Fresh build timestamp: 2026-04-17 16:45:56 UTC
 """
 
 import argparse
 import json
-from inference_core import InferenceEngine
+from ml import InferenceEngine
 
 
 def main():

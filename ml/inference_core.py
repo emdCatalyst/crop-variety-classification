@@ -28,13 +28,24 @@ except ImportError:
     SCIPY_OK = False
 
 import rasterio
-from model import CropCNNLSTM
+from .model import CropCNNLSTM
+
+_PKG_ROOT = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.dirname(_PKG_ROOT)
+
+
+def _path_from_env(env_var: str, default_relative: str) -> str:
+    value = os.environ.get(env_var)
+    if value:
+        return value
+    return os.path.join(_PROJECT_ROOT, default_relative)
+
 
 CONFIG = {
-    "model_path": "./results/cnn_lstm.pth",
-    "plots_dir": "./mustc_plots",
-    "labels_csv": "./metadata/plot_metadata.csv",
-    "output_dir": "./classification_maps",
+    "model_path": _path_from_env("MODEL_PATH", "ml/weights/cnn_lstm.pth"),
+    "plots_dir": _path_from_env("PLOTS_DIR", "mustc_plots"),
+    "labels_csv": _path_from_env("LABELS_CSV", "metadata/plot_metadata.csv"),
+    "output_dir": _path_from_env("MAPS_DIR", "app/static/maps"),
     "num_timesteps": 12,
     "patch_size": 32,
     "lstm_hidden": 128,
@@ -89,7 +100,8 @@ def parse_date(folder_name: str):
         return datetime.min
 
 
-def auto_find_model(results_dir="./results"):
+def auto_find_model(results_dir=None):
+    results_dir = results_dir or os.path.join(_PROJECT_ROOT, "results")
     candidates = glob.glob(os.path.join(results_dir, "cnn_lstm.pth"))
     candidates += sorted(glob.glob(os.path.join(results_dir, "run_*", "cnn_lstm.pth")))
     return candidates[-1] if candidates else None

@@ -1,9 +1,12 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { login } from "@/api/auth";
 import { User } from "@/api/client";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,7 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
       onSignIn(u);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.detail ?? "Login failed");
+      setError(err.response?.data?.detail ?? t("auth.login_failed"));
     } finally {
       setPending(false);
     }
@@ -28,11 +31,14 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-brand-50 to-white">
       <form onSubmit={onSubmit} className="w-full max-w-sm bg-white rounded-xl shadow p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-brand-700">Sign in</h1>
-        <p className="text-sm text-slate-600">Welcome back to Agro-Vision.</p>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-brand-700">{t("auth.sign_in")}</h1>
+          <LanguageSwitcher />
+        </div>
+        <p className="text-sm text-slate-600">{t("auth.sign_in_subtitle")}</p>
 
         <label className="block text-sm">
-          Email
+          {t("auth.email")}
           <input
             type="email"
             value={email}
@@ -43,7 +49,7 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
         </label>
 
         <label className="block text-sm">
-          Password
+          {t("auth.password")}
           <input
             type="password"
             value={password}
@@ -60,13 +66,13 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
           disabled={pending}
           className="w-full rounded-md bg-brand-600 hover:bg-brand-700 text-white py-2 text-sm font-medium disabled:opacity-50"
         >
-          {pending ? "Signing in..." : "Sign in"}
+          {pending ? t("auth.signing_in") : t("auth.sign_in")}
         </button>
 
         <div className="text-sm text-slate-600 text-center">
-          New here?{" "}
+          {t("auth.new_here")}{" "}
           <Link to="/signup" className="text-brand-700 hover:underline">
-            Create an account
+            {t("auth.create_account_link")}
           </Link>
         </div>
       </form>

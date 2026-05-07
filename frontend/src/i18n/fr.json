@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "Agro-Vision",
+    "tagline": "Classification des variétés et évaluation sanitaire"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "upload": "Téléverser",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "notifications": "Notifications",
+    "sign_out": "Déconnexion"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Mises à jour de vos analyses.",
+    "empty": "Aucune notification pour le moment.",
+    "mark_read": "Marquer comme lu",
+    "mark_all_read": "Tout marquer comme lu",
+    "view_analysis": "Voir l'analyse",
+    "unread_aria": "{{count}} non lues"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "loading": "Chargement…",
+    "download_pdf": "Télécharger le PDF",
+    "delete": "Supprimer",
+    "back": "Retour",
+    "language": "Langue",
+    "save_changes": "Enregistrer les modifications",
+    "saved": "Enregistré",
+    "error": "Erreur"
+  },
+  "status": {
+    "queued": "En file",
+    "processing": "En traitement",
+    "completed": "Terminé",
+    "failed": "Échec",
+    "all": "Tous"
+  },
+  "auth": {
+    "sign_in": "Connexion",
+    "sign_in_subtitle": "Bon retour sur Agro-Vision.",
+    "create_account": "Créer un compte",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "password_min": "Mot de passe (min 8)",
+    "display_name": "Nom affiché",
+    "signing_in": "Connexion…",
+    "creating": "Création…",
+    "new_here": "Nouveau ici ?",
+    "create_account_link": "Créer un compte",
+    "already_member": "Déjà inscrit ?",
+    "login_failed": "Échec de la connexion",
+    "signup_failed": "Échec de l'inscription"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "new_analysis": "Nouvelle analyse",
+    "total_analyses": "Analyses totales",
+    "processing_count": "En traitement",
+    "completed_count": "Terminées",
+    "latest": "Dernières analyses",
+    "empty": "Aucune analyse pour le moment. Lancez la première."
+  },
+  "upload": {
+    "title": "Nouvelle analyse",
+    "source_name": "Nom de la source (facultatif)",
+    "source_placeholder": "ex. parcelle_nord_2026",
+    "files_label": "GeoTIFF multispectraux multi-temporels ({{count}} fichiers requis)",
+    "smooth_label": "Appliquer un lissage d'affichage à la carte de classification",
+    "uploading": "Téléversement…",
+    "run_inference": "Lancer l'inférence",
+    "select_exact": "Sélectionnez exactement {{count}} fichiers GeoTIFF (sélectionnés {{got}})",
+    "upload_failed": "Échec du téléversement"
+  },
+  "result": {
+    "classification_map": "Carte de classification",
+    "summary": "Résumé",
+    "predicted_crop": "Culture prédite",
+    "health": "Santé",
+    "trajectory": "Trajectoire",
+    "confidence": "Confiance",
+    "ndvi": "NDVI",
+    "ndre": "NDRE",
+    "savi": "SAVI",
+    "temporal_trend": "Tendance temporelle",
+    "advice": "Conseil",
+    "class_distribution": "Distribution des classes",
+    "current_stage": "Étape actuelle",
+    "processing": "Traitement…",
+    "failed": "L'analyse a échoué"
+  },
+  "reports": {
+    "title": "Rapports",
+    "subtitle": "Analyses passées avec rapports PDF téléchargeables.",
+    "filter": "Filtre",
+    "empty": "Aucune analyse pour ce filtre.",
+    "row_predicted": "Prédit",
+    "row_health": "Santé",
+    "edit_notes": "Modifier les notes",
+    "hide_notes": "Masquer les notes",
+    "farmer_notes": "Observation du producteur",
+    "notes_placeholder": "Observations sur le terrain (verse, sécheresse, ravageurs, fertilisation…)",
+    "observed_on": "Observé le",
+    "notes_saved": "Notes enregistrées.",
+    "save_failed": "Impossible d'enregistrer les notes."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "profile": "Profil",
+    "display_name": "Nom affiché",
+    "language": "Langue préférée",
+    "language_en": "Anglais",
+    "language_fr": "Français",
+    "language_ar": "Arabe",
+    "profile_saved": "Profil mis à jour.",
+    "change_password": "Changer le mot de passe",
+    "current_password": "Mot de passe actuel",
+    "new_password": "Nouveau mot de passe",
+    "password_changed": "Mot de passe mis à jour.",
+    "password_failed": "Impossible de changer le mot de passe."
+  }
+}

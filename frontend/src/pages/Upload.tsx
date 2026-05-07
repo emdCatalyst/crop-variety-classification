@@ -1,10 +1,12 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Analysis, api } from "@/api/client";
 
 const REQUIRED = 12;
 
 export default function UploadPage() {
+  const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const [sourceName, setSourceName] = useState("");
   const [smooth, setSmooth] = useState(false);
@@ -18,14 +20,14 @@ export default function UploadPage() {
     setError(
       list.length === REQUIRED
         ? null
-        : `Select exactly ${REQUIRED} GeoTIFF files (selected ${list.length})`
+        : t("upload.select_exact", { count: REQUIRED, got: list.length })
     );
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (files.length !== REQUIRED) {
-      setError(`Select exactly ${REQUIRED} GeoTIFF files`);
+      setError(t("upload.select_exact", { count: REQUIRED, got: files.length }));
       return;
     }
     setPending(true);
@@ -42,7 +44,7 @@ export default function UploadPage() {
       const { data } = await api.post<Analysis>("/analyses", fd);
       navigate(`/analyses/${data.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.detail ?? "Upload failed");
+      setError(err.response?.data?.detail ?? t("upload.upload_failed"));
     } finally {
       setPending(false);
     }
@@ -50,22 +52,22 @@ export default function UploadPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">New analysis</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("upload.title")}</h1>
 
       <form onSubmit={onSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-5">
         <label className="block text-sm">
-          Source name (optional)
+          {t("upload.source_name")}
           <input
             value={sourceName}
             onChange={(e) => setSourceName(e.target.value)}
-            placeholder="e.g. north_field_2026"
+            placeholder={t("upload.source_placeholder") ?? ""}
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500"
           />
         </label>
 
         <div>
           <label className="block text-sm font-medium mb-2">
-            Multi-temporal multispectral GeoTIFFs ({REQUIRED} files required)
+            {t("upload.files_label", { count: REQUIRED })}
           </label>
           <input
             type="file"
@@ -94,7 +96,7 @@ export default function UploadPage() {
             checked={smooth}
             onChange={(e) => setSmooth(e.target.checked)}
           />
-          Apply display smoothing to the classification map
+          {t("upload.smooth_label")}
         </label>
 
         {error && <div className="text-sm text-red-600">{error}</div>}
@@ -104,7 +106,7 @@ export default function UploadPage() {
           disabled={pending || files.length !== REQUIRED}
           className="rounded-md bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 text-sm font-medium disabled:opacity-50"
         >
-          {pending ? "Uploading…" : "Run inference"}
+          {pending ? t("upload.uploading") : t("upload.run_inference")}
         </button>
       </form>
     </div>

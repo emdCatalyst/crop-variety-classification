@@ -28,6 +28,7 @@ class ResultOut(BaseModel):
     map_url: str
     class_distribution: dict
     farmer_notes: str | None = None
+    observed_at: datetime | None = None
 
     class Config:
         from_attributes = True
@@ -35,3 +36,20 @@ class ResultOut(BaseModel):
 
 class AnalysisDetailOut(AnalysisOut):
     result: ResultOut | None = None
+
+
+class ReportListOut(BaseModel):
+    id: int
+    source_name: str
+    status: str
+    created_at: datetime
+    predicted_crop: str | None = None
+    health_status: str | None = None
+    farmer_notes: str | None = None
+    observed_at: datetime | None = None
+    has_result: bool = False
+
+
+class FarmerNotesIn(BaseModel):
+    farmer_notes: str | None = None
+    observed_at: datetime | None = None

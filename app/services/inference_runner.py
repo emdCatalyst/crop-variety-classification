@@ -15,6 +15,8 @@ from ..core.config import get_settings
 from ..core.db import SessionLocal
 from ..core.events import publish
 from ..models import Analysis, AnalysisStatus, Result
+from .health_advisor import HealthContext, assess as assess_health_ai
+from .notifications import emit as emit_notification, user_channel as notifications_channel
 
 log = logging.getLogger("agrovision.inference")
 
@@ -81,12 +83,33 @@ async def run_analysis(analysis_id: int) -> None:
         map_filename = Path(artifacts.map_png_path).name
         map_url = f"/static/maps/{map_filename}"
 
+        assessment = await assess_health_ai(
+            HealthContext(
+                analysis_id=analysis.id,
+                predicted_crop=artifacts.predicted_crop,
+                class_distribution=artifacts.class_distribution,
+                mean_confidence=float(artifacts.mean_confidence),
+                mean_ndvi=float(artifacts.mean_ndvi),
+                mean_ndre=float(artifacts.ndre_mean),
+                mean_savi=float(artifacts.savi_mean),
+                temporal_trend=float(artifacts.temporal_trend),
+                heuristic_health_status=artifacts.health_status,
+                heuristic_trajectory=artifacts.trajectory,
+                heuristic_advice=artifacts.advice,
+            )
+        )
+        log.info(
+            "analysis %s health assessment from source=%s",
+            analysis.id,
+            assessment.source,
+        )
+
         result = Result(
             analysis_id=analysis.id,
             predicted_crop=artifacts.predicted_crop,
-            health_status=artifacts.health_status,
-            trajectory=artifacts.trajectory,
-            advice=artifacts.advice,
+            health_status=assessment.health_status,
+            trajectory=assessment.trajectory,
+            advice=assessment.advice,
             mean_confidence=float(artifacts.mean_confidence),
             mean_ndvi=float(artifacts.mean_ndvi),
             mean_ndre=float(artifacts.ndre_mean),
@@ -99,19 +122,57 @@ async def run_analysis(analysis_id: int) -> None:
         )
         db.add(result)
         analysis.status = AnalysisStatus.completed
+        note = emit_notification(
+            db,
+            user_id=analysis.user_id,
+            kind="analysis_completed",
+            title=f"Analysis “{analysis.source_name}” completed",
+            body=(
+                f"Predicted crop: {artifacts.predicted_crop.replace('_', ' ')}. "
+                f"Health: {assessment.health_status}."
+            ),
+            analysis_id=analysis.id,
+        )
         db.commit()
 
+        await publish(
+            notifications_channel(analysis.user_id),
+            {
+                "id": note.id,
+                "kind": note.kind,
+                "title": note.title,
+                "analysis_id": note.analysis_id,
+            },
+        )
         await _emit(channel, "done", message="Analysis complete", result_id=result.id)
     except Exception as exc:
         log.exception("analysis %s failed", analysis_id)
+        note_payload: dict | None = None
         try:
             analysis = db.get(Analysis, analysis_id)
             if analysis:
                 analysis.status = AnalysisStatus.failed
                 analysis.error = str(exc)
+                note = emit_notification(
+                    db,
+                    user_id=analysis.user_id,
+                    kind="analysis_failed",
+                    title=f"Analysis “{analysis.source_name}” failed",
+                    body=str(exc)[:500],
+                    analysis_id=analysis.id,
+                )
                 db.commit()
+                note_payload = {
+                    "id": note.id,
+                    "kind": note.kind,
+                    "title": note.title,
+                    "analysis_id": note.analysis_id,
+                    "user_id": analysis.user_id,
+                }
         except Exception:
             pass
+        if note_payload:
+            await publish(notifications_channel(note_payload["user_id"]), note_payload)
         await _emit(channel, "failed", message=str(exc))
     finally:
         db.close()

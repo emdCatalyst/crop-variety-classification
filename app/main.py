@@ -7,6 +7,9 @@ from fastapi.staticfiles import StaticFiles
 
 from .api import analyses as analyses_api
 from .api import auth as auth_api
+from .api import notifications as notifications_api
+from .api import reports as reports_api
+from .api import settings as settings_api
 from .api import sse as sse_api
 from .core.config import get_settings
 
@@ -22,6 +25,9 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_api.router, prefix=s.api_prefix)
     app.include_router(analyses_api.router, prefix=s.api_prefix)
+    app.include_router(notifications_api.router, prefix=s.api_prefix)
+    app.include_router(reports_api.router, prefix=s.api_prefix)
+    app.include_router(settings_api.router, prefix=s.api_prefix)
     app.include_router(sse_api.router, prefix=s.api_prefix)
 
     s.maps_dir.mkdir(parents=True, exist_ok=True)

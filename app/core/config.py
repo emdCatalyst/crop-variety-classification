@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     max_upload_mb: int = 200
     num_timesteps: int = 12
 
+    health_ai_provider: str = "heuristic"
+    gemini_api_key: str | None = None
+    groq_api_key: str | None = None
+    gemini_model: str = "gemini-2.5-flash"
+    groq_model: str = "llama-3.3-70b-versatile"
+    health_ai_timeout_s: float = 8.0
+
     cors_origins: list[str] = []
 
 

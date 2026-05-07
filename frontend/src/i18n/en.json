@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "Agro-Vision",
+    "tagline": "Crop variety classification & health assessment"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "upload": "Upload",
+    "reports": "Reports",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "sign_out": "Sign out"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Updates from your analyses.",
+    "empty": "No notifications yet.",
+    "mark_read": "Mark read",
+    "mark_all_read": "Mark all as read",
+    "view_analysis": "View analysis",
+    "unread_aria": "{{count}} unread"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "download_pdf": "Download PDF",
+    "delete": "Delete",
+    "back": "Back",
+    "language": "Language",
+    "save_changes": "Save changes",
+    "saved": "Saved",
+    "error": "Error"
+  },
+  "status": {
+    "queued": "Queued",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "all": "All"
+  },
+  "auth": {
+    "sign_in": "Sign in",
+    "sign_in_subtitle": "Welcome back to Agro-Vision.",
+    "create_account": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "password_min": "Password (min 8)",
+    "display_name": "Display name",
+    "signing_in": "Signing in…",
+    "creating": "Creating…",
+    "new_here": "New here?",
+    "create_account_link": "Create an account",
+    "already_member": "Already a member?",
+    "login_failed": "Login failed",
+    "signup_failed": "Sign up failed"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "new_analysis": "New analysis",
+    "total_analyses": "Total analyses",
+    "processing_count": "Processing",
+    "completed_count": "Completed",
+    "latest": "Latest analyses",
+    "empty": "No analyses yet. Start your first one."
+  },
+  "upload": {
+    "title": "New analysis",
+    "source_name": "Source name (optional)",
+    "source_placeholder": "e.g. north_field_2026",
+    "files_label": "Multi-temporal multispectral GeoTIFFs ({{count}} files required)",
+    "smooth_label": "Apply display smoothing to the classification map",
+    "uploading": "Uploading…",
+    "run_inference": "Run inference",
+    "select_exact": "Select exactly {{count}} GeoTIFF files (selected {{got}})",
+    "upload_failed": "Upload failed"
+  },
+  "result": {
+    "classification_map": "Classification map",
+    "summary": "Summary",
+    "predicted_crop": "Predicted crop",
+    "health": "Health",
+    "trajectory": "Trajectory",
+    "confidence": "Confidence",
+    "ndvi": "NDVI",
+    "ndre": "NDRE",
+    "savi": "SAVI",
+    "temporal_trend": "Temporal trend",
+    "advice": "Advice",
+    "class_distribution": "Class distribution",
+    "current_stage": "Current stage",
+    "processing": "Processing…",
+    "failed": "Analysis failed"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Past analyses with downloadable PDF reports.",
+    "filter": "Filter",
+    "empty": "No analyses match this filter.",
+    "row_predicted": "Predicted",
+    "row_health": "Health",
+    "edit_notes": "Edit notes",
+    "hide_notes": "Hide notes",
+    "farmer_notes": "Farmer's observation",
+    "notes_placeholder": "Anything observed in the field (lodging, drought, pests, fertilizer events…)",
+    "observed_on": "Observed on",
+    "notes_saved": "Notes saved.",
+    "save_failed": "Could not save notes."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "display_name": "Display name",
+    "language": "Preferred language",
+    "language_en": "English",
+    "language_fr": "French",
+    "language_ar": "Arabic",
+    "profile_saved": "Profile updated.",
+    "change_password": "Change password",
+    "current_password": "Current password",
+    "new_password": "New password",
+    "password_changed": "Password updated.",
+    "password_failed": "Could not change password."
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "أجرو-فيجن",
+    "tagline": "تصنيف أصناف المحاصيل وتقييم الصحة"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "upload": "رفع",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات",
+    "sign_out": "تسجيل الخروج"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "تحديثات من تحليلاتك.",
+    "empty": "لا توجد إشعارات بعد.",
+    "mark_read": "وضع علامة مقروء",
+    "mark_all_read": "تحديد الكل كمقروء",
+    "view_analysis": "عرض التحليل",
+    "unread_aria": "{{count}} غير مقروءة"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل…",
+    "download_pdf": "تنزيل PDF",
+    "delete": "حذف",
+    "back": "رجوع",
+    "language": "اللغة",
+    "save_changes": "حفظ التغييرات",
+    "saved": "تم الحفظ",
+    "error": "خطأ"
+  },
+  "status": {
+    "queued": "في الانتظار",
+    "processing": "قيد المعالجة",
+    "completed": "مكتمل",
+    "failed": "فشل",
+    "all": "الكل"
+  },
+  "auth": {
+    "sign_in": "تسجيل الدخول",
+    "sign_in_subtitle": "أهلاً بعودتك إلى أجرو-فيجن.",
+    "create_account": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "password_min": "كلمة المرور (8 أحرف على الأقل)",
+    "display_name": "الاسم الظاهر",
+    "signing_in": "جارٍ تسجيل الدخول…",
+    "creating": "جارٍ الإنشاء…",
+    "new_here": "جديد هنا؟",
+    "create_account_link": "أنشئ حساباً",
+    "already_member": "لديك حساب؟",
+    "login_failed": "فشل تسجيل الدخول",
+    "signup_failed": "فشل إنشاء الحساب"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "new_analysis": "تحليل جديد",
+    "total_analyses": "إجمالي التحليلات",
+    "processing_count": "قيد المعالجة",
+    "completed_count": "المكتملة",
+    "latest": "أحدث التحليلات",
+    "empty": "لا توجد تحليلات بعد. ابدأ التحليل الأول."
+  },
+  "upload": {
+    "title": "تحليل جديد",
+    "source_name": "اسم المصدر (اختياري)",
+    "source_placeholder": "مثال: حقل_الشمال_2026",
+    "files_label": "ملفات GeoTIFF متعددة الأطياف والزمن (مطلوب {{count}} ملفات)",
+    "smooth_label": "تطبيق تنعيم العرض على خريطة التصنيف",
+    "uploading": "جارٍ الرفع…",
+    "run_inference": "تشغيل الاستدلال",
+    "select_exact": "اختر بالضبط {{count}} ملفات GeoTIFF (المختار {{got}})",
+    "upload_failed": "فشل الرفع"
+  },
+  "result": {
+    "classification_map": "خريطة التصنيف",
+    "summary": "ملخص",
+    "predicted_crop": "المحصول المتوقع",
+    "health": "الصحة",
+    "trajectory": "المسار",
+    "confidence": "الثقة",
+    "ndvi": "NDVI",
+    "ndre": "NDRE",
+    "savi": "SAVI",
+    "temporal_trend": "الاتجاه الزمني",
+    "advice": "نصيحة",
+    "class_distribution": "توزيع الفئات",
+    "current_stage": "المرحلة الحالية",
+    "processing": "جارٍ المعالجة…",
+    "failed": "فشل التحليل"
+  },
+  "reports": {
+    "title": "التقارير",
+    "subtitle": "التحليلات السابقة مع تقارير PDF قابلة للتنزيل.",
+    "filter": "تصفية",
+    "empty": "لا توجد تحليلات تطابق هذا التصفية.",
+    "row_predicted": "المتوقع",
+    "row_health": "الصحة",
+    "edit_notes": "تحرير الملاحظات",
+    "hide_notes": "إخفاء الملاحظات",
+    "farmer_notes": "ملاحظة المزارع",
+    "notes_placeholder": "أي ملاحظات ميدانية (الانكفاء، الجفاف، الآفات، التسميد…)",
+    "observed_on": "تاريخ الملاحظة",
+    "notes_saved": "تم حفظ الملاحظات.",
+    "save_failed": "تعذّر حفظ الملاحظات."
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "display_name": "الاسم الظاهر",
+    "language": "اللغة المفضلة",
+    "language_en": "الإنجليزية",
+    "language_fr": "الفرنسية",
+    "language_ar": "العربية",
+    "profile_saved": "تم تحديث الملف الشخصي.",
+    "change_password": "تغيير كلمة المرور",
+    "current_password": "كلمة المرور الحالية",
+    "new_password": "كلمة المرور الجديدة",
+    "password_changed": "تم تحديث كلمة المرور.",
+    "password_failed": "تعذّر تغيير كلمة المرور."
+  }
+}

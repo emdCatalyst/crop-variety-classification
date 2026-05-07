@@ -1,4 +1,6 @@
-from sqlalchemy import JSON, ForeignKey, String, Text
+from datetime import datetime
+
+from sqlalchemy import JSON, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, TimestampMixin
@@ -23,5 +25,6 @@ class Result(Base, TimestampMixin):
     geotiff_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
     class_distribution: Mapped[dict] = mapped_column(JSON)
     farmer_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    observed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     analysis: Mapped["Analysis"] = relationship(back_populates="result")  # type: ignore  # noqa: F821

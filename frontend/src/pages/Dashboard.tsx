@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Analysis, api } from "@/api/client";
 
 const statusBadge: Record<string, string> = {
@@ -10,6 +11,7 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const { t, i18n } = useTranslation();
   const [items, setItems] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,39 +25,40 @@ export default function DashboardPage() {
   const total = items.length;
   const processing = items.filter((a) => a.status === "queued" || a.status === "processing").length;
   const completed = items.filter((a) => a.status === "completed").length;
+  const locale = i18n.language.split("-")[0];
 
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
         <Link
           to="/upload"
           className="rounded-md bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 text-sm font-medium"
         >
-          New analysis
+          {t("dashboard.new_analysis")}
         </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Stat label="Total analyses" value={total} />
-        <Stat label="Processing" value={processing} />
-        <Stat label="Completed" value={completed} />
+        <Stat label={t("dashboard.total_analyses")} value={total} />
+        <Stat label={t("dashboard.processing_count")} value={processing} />
+        <Stat label={t("dashboard.completed_count")} value={completed} />
       </div>
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">Latest analyses</h2>
+        <h2 className="text-lg font-semibold mb-2">{t("dashboard.latest")}</h2>
         {loading ? (
-          <p className="text-sm text-slate-500">Loading…</p>
+          <p className="text-sm text-slate-500">{t("common.loading")}</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-slate-500">No analyses yet. Start your first one.</p>
+          <p className="text-sm text-slate-500">{t("dashboard.empty")}</p>
         ) : (
           <ul className="divide-y divide-slate-200 bg-white rounded-lg shadow-sm">
-            {items.slice(0, 10).map((a) => (
+            {items.slice(0, 5).map((a) => (
               <li key={a.id} className="p-4 flex items-center justify-between">
                 <Link to={`/analyses/${a.id}`} className="flex-1">
                   <div className="font-medium">{a.source_name}</div>
                   <div className="text-xs text-slate-500">
-                    {new Date(a.created_at).toLocaleString()}
+                    {new Date(a.created_at).toLocaleString(locale)}
                   </div>
                 </Link>
                 <span
@@ -63,7 +66,7 @@ export default function DashboardPage() {
                     statusBadge[a.status] ?? "bg-slate-100"
                   }`}
                 >
-                  {a.status}
+                  {t(`status.${a.status}`)}
                 </span>
               </li>
             ))}

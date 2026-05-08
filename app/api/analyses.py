@@ -1,12 +1,23 @@
 import re
 import shutil
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from sqlalchemy.orm import Session
 
 from ..core.config import get_settings
 from ..core.db import get_db
 from ..core.deps import get_current_user
+from ..core.rate_limit import limiter
 from ..models import Analysis, AnalysisStatus, Image, User
 from ..schemas.analysis import AnalysisDetailOut, AnalysisOut
 from ..services.inference_runner import run_analysis
@@ -32,7 +43,9 @@ def list_analyses(db: Session = Depends(get_db), user: User = Depends(get_curren
 
 
 @router.post("", response_model=AnalysisOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("12/hour")
 async def create_analysis(
+    request: Request,
     background: BackgroundTasks,
     files: list[UploadFile] = File(...),
     source_name: str = Form("uploaded_sequence"),
@@ -104,7 +117,9 @@ def get_analysis(
     user: User = Depends(get_current_user),
 ) -> Analysis:
     analysis = db.get(Analysis, analysis_id)
-    if not analysis or analysis.user_id != user.id:
+    if not analysis:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    if analysis.user_id != user.id and user.role != "admin":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     return analysis
 

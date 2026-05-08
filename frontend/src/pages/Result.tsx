@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AnalysisDetail, api } from "@/api/client";
 import { useAnalysisEvents } from "@/hooks/useSSE";
@@ -8,6 +8,20 @@ import { pdfUrl } from "@/api/reports";
 export default function ResultPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  const backTo =
+    from === "reports"
+      ? "/reports"
+      : from === "analyses"
+      ? "/analyses"
+      : "/dashboard";
+  const backLabel =
+    from === "reports"
+      ? t("nav.reports")
+      : from === "analyses"
+      ? t("nav.analyses")
+      : t("nav.dashboard");
   const analysisId = id ? Number(id) : null;
   const [detail, setDetail] = useState<AnalysisDetail | null>(null);
 
@@ -34,14 +48,14 @@ export default function ResultPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link to="/dashboard" className="text-sm text-brand-700 hover:underline">
-            ← {t("nav.dashboard")}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <Link to={backTo} className="text-sm text-brand-700 hover:underline">
+            ← {backLabel}
           </Link>
-          <h1 className="text-2xl font-bold mt-1">{detail.source_name}</h1>
+          <h1 className="text-2xl font-bold mt-1 break-words">{detail.source_name}</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
           <span className="px-3 py-1 rounded-md text-xs font-medium bg-slate-200 text-slate-700">
             {t(`status.${detail.status}`)}
           </span>
@@ -60,12 +74,15 @@ export default function ResultPage() {
         <div className="bg-white rounded-lg shadow-sm p-5">
           <h2 className="font-semibold mb-2">{t("result.processing")}</h2>
           <p className="text-sm text-slate-600 mb-3">
-            {t("result.current_stage")}: <strong>{stage}</strong>
+            {t("result.current_stage")}:{" "}
+            <strong>{t(`stages.${stage}`, { defaultValue: stage })}</strong>
           </p>
           <ol className="text-sm text-slate-700 space-y-1 max-h-48 overflow-y-auto">
             {events.map((e, i) => (
               <li key={i}>
-                <span className="text-slate-400 me-2">[{e.stage}]</span>
+                <span className="text-slate-400 me-2">
+                  [{t(`stages.${e.stage}`, { defaultValue: e.stage })}]
+                </span>
                 {e.message}
               </li>
             ))}
@@ -115,6 +132,23 @@ export default function ResultPage() {
               <strong>{t("result.advice")}:</strong> {detail.result.advice}
             </div>
           </section>
+
+          {detail.result.farmer_notes && (
+            <section className="bg-white rounded-lg shadow-sm p-5">
+              <div className="flex items-baseline justify-between gap-3 mb-2">
+                <h2 className="font-semibold">{t("reports.farmer_notes")}</h2>
+                {detail.result.observed_at && (
+                  <span className="text-xs text-slate-500">
+                    {t("reports.observed_on")}:{" "}
+                    {new Date(detail.result.observed_at).toLocaleDateString(lang)}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                {detail.result.farmer_notes}
+              </p>
+            </section>
+          )}
 
           <section className="bg-white rounded-lg shadow-sm p-5">
             <h2 className="font-semibold mb-3">{t("result.class_distribution")}</h2>

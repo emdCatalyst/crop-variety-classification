@@ -43,6 +43,14 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = []
 
+    # Dev knob: artificial delay (seconds) inserted before each inference
+    # stage emit so the progress UI is visible on fast machines. 0 disables.
+    dev_stage_delay_s: float = 0.0
+
+    # Logging: pretty (human-readable) by default. Flip to false in prod for
+    # JSON-serialized lines that are friendlier to log shippers.
+    log_pretty: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -20,7 +20,9 @@ async def analysis_events(
     user: User = Depends(get_current_user),
 ):
     analysis = db.get(Analysis, analysis_id)
-    if not analysis or analysis.user_id != user.id:
+    if not analysis:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    if analysis.user_id != user.id and user.role != "admin":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
 
     channel = f"analysis:{analysis_id}"

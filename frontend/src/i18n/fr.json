@@ -9,7 +9,84 @@
     "reports": "Rapports",
     "settings": "Paramètres",
     "notifications": "Notifications",
+    "messages": "Messages",
+    "menu": "Menu",
+    "users": "Utilisateurs",
+    "analyses": "Analyses",
+    "broadcast": "Diffusion",
     "sign_out": "Déconnexion"
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Gérer les utilisateurs, les analyses et les notifications.",
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "users": "Utilisateurs",
+      "analyses": "Analyses",
+      "broadcast": "Diffusion"
+    },
+    "stats": {
+      "users": "Utilisateurs",
+      "active": "actifs",
+      "admins": "Admins",
+      "analyses": "Analyses",
+      "notifications": "Notifications"
+    },
+    "recent_activity": "Activité récente",
+    "no_activity": "Rien pour l'instant.",
+    "users": {
+      "active": "Actif",
+      "role_user": "Utilisateur",
+      "role_admin": "Admin",
+      "confirm_delete": "Supprimer définitivement {{email}} et toutes ses données ?",
+      "update_failed": "Impossible de mettre à jour l'utilisateur.",
+      "delete_failed": "Impossible de supprimer l'utilisateur."
+    },
+    "analyses": {
+      "empty": "Aucune analyse ne correspond à ce filtre.",
+      "confirm_delete": "Supprimer définitivement «{{name}}» — y compris les fichiers et la carte ?",
+      "load_failed": "Impossible de charger les analyses.",
+      "delete_failed": "Impossible de supprimer l'analyse."
+    },
+    "broadcast": {
+      "hint": "Envoie une notification dans l'application à tous les utilisateurs. À utiliser avec parcimonie.",
+      "title_label": "Titre",
+      "body_label": "Contenu",
+      "only_active": "Utilisateurs actifs uniquement",
+      "send": "Envoyer la diffusion",
+      "sent": "Envoyé à {{count}} utilisateur(s).",
+      "failed": "Impossible d'envoyer la diffusion."
+    }
+  },
+  "home": {
+    "headline": "Classification de variétés de cultures, dans votre navigateur.",
+    "subhead": "Téléversez une série de 12 GeoTIFF multispectraux et Agro-Vision vous renvoie la variété prédite, une évaluation sanitaire et un rapport PDF téléchargeable — en français, anglais ou arabe.",
+    "get_started": "Commencer",
+    "preview_caption": "Aperçu d'une carte de classification",
+    "feature_inference_title": "Inférence CNN+LSTM",
+    "feature_inference_body": "Un modèle pré-entraîné classifie chaque pixel à partir de 12 pas de temps d'images multispectrales et génère une carte par parcelle.",
+    "feature_health_title": "Évaluation sanitaire par IA",
+    "feature_health_body": "Un conseiller LLM optionnel (Gemini ou Groq) transforme les signaux NDVI/NDRE/SAVI en résumé agronomique en langage clair, avec un repli heuristique.",
+    "feature_reports_title": "Rapports & langues",
+    "feature_reports_body": "Enregistrez les notes du cultivateur sur chaque analyse et téléchargez un rapport PDF multilingue — anglais, français et arabe avec un RTL correct.",
+    "footer": "© {{year}} Agro-Vision"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle_user": "Envoyer un message à l'équipe d'assistance.",
+    "subtitle_admin": "Conversations de vos utilisateurs.",
+    "threads": "Conversations",
+    "no_threads": "Aucune conversation pour le moment.",
+    "select_thread": "Sélectionnez une conversation pour voir les messages.",
+    "thread_empty": "Aucun message dans cette conversation.",
+    "support_team": "Équipe d'assistance",
+    "support_hint": "Nous vous répondrons ici.",
+    "start_conversation": "Envoyez le premier message pour démarrer la conversation.",
+    "input_placeholder": "Écrire un message…",
+    "send": "Envoyer",
+    "send_failed": "Impossible d'envoyer le message.",
+    "attachment_label": "[image jointe]",
+    "attachment_too_large": "La pièce jointe doit faire 5 Mo ou moins."
   },
   "notifications": {
     "title": "Notifications",
@@ -38,6 +115,15 @@
     "completed": "Terminé",
     "failed": "Échec",
     "all": "Tous"
+  },
+  "stages": {
+    "queued": "En file",
+    "processing": "En traitement",
+    "loading": "Chargement des entrées",
+    "inferring": "Inférence en cours",
+    "rendering": "Génération des résultats",
+    "done": "Terminé",
+    "failed": "Échec"
   },
   "auth": {
     "sign_in": "Connexion",

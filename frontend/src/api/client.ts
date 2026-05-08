@@ -35,6 +35,7 @@ export type AnalysisResult = {
   map_url: string;
   class_distribution: Record<string, number>;
   farmer_notes: string | null;
+  observed_at: string | null;
 };
 
 export type AnalysisDetail = Analysis & { result: AnalysisResult | null };

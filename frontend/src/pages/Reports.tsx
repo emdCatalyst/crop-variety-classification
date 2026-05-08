@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { listReports, pdfUrl, ReportRow, updateNotes } from "@/api/reports";
 
@@ -123,9 +124,15 @@ function ReportCard({
 
   return (
     <li className="bg-white rounded-lg shadow-sm">
-      <div className="p-4 flex flex-wrap items-center gap-3 justify-between">
-        <div className="min-w-0 flex-1">
-          <div className="font-medium truncate">{row.source_name}</div>
+      <div className="p-4 flex flex-col md:flex-row md:flex-wrap md:items-center gap-3 md:justify-between">
+        <div className="min-w-0 md:flex-1">
+          <Link
+            to={`/analyses/${row.id}`}
+            state={{ from: "reports" }}
+            className="font-medium truncate hover:text-brand-700 hover:underline block"
+          >
+            {row.source_name}
+          </Link>
           <div className="text-xs text-slate-500 mt-0.5">
             {new Date(row.created_at).toLocaleString(language)}
           </div>
@@ -140,15 +147,26 @@ function ReportCard({
               </span>
             </div>
           )}
+          {row.farmer_notes && (
+            <div className="mt-2 text-xs text-slate-600 line-clamp-2">
+              <span className="text-slate-400">{t("reports.farmer_notes")}:</span>{" "}
+              {row.farmer_notes}
+              {row.observed_at && (
+                <span className="text-slate-400 ms-2">
+                  ({new Date(row.observed_at).toLocaleDateString(language)})
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <span
-          className={`px-2 py-1 rounded-md text-xs font-medium ${
+          className={`self-start md:self-auto px-2 py-1 rounded-md text-xs font-medium ${
             statusColor[row.status] ?? "bg-slate-100"
           }`}
         >
           {t(`status.${row.status}`)}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {row.has_result && (
             <>
               <button

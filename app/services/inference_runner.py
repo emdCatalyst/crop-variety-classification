@@ -44,6 +44,9 @@ def _get_engine():
 
 async def _emit(channel: str, stage: str, **kwargs) -> None:
     await publish(channel, {"stage": stage, **kwargs})
+    delay = get_settings().dev_stage_delay_s
+    if delay > 0:
+        await asyncio.sleep(delay)
 
 
 async def run_analysis(analysis_id: int) -> None:

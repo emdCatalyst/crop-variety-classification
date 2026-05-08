@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { unreadCount as fetchUnreadCount } from "@/api/notifications";
 import { playNotificationChime } from "@/lib/chime";
+import { useNotificationsStream } from "@/hooks/useNotificationsStream";
 
 const POLL_INTERVAL_MS = 60_000;
-const STREAM_URL = "/api/v1/notifications/stream";
 
 export default function NotificationsBell({
   unread,
@@ -16,19 +16,17 @@ export default function NotificationsBell({
 }) {
   const { t } = useTranslation();
   const lastUnreadRef = useRef(unread);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     lastUnreadRef.current = unread;
   }, [unread]);
 
-  useEffect(() => {
-    let cancelled = false;
-    let es: EventSource | null = null;
-
-    async function refresh(playOnIncrease: boolean) {
+  const refresh = useCallback(
+    async (playOnIncrease: boolean) => {
       try {
         const n = await fetchUnreadCount();
-        if (cancelled) return;
+        if (cancelledRef.current) return;
         if (playOnIncrease && n > lastUnreadRef.current) {
           playNotificationChime();
         }
@@ -36,27 +34,25 @@ export default function NotificationsBell({
       } catch {
         // best-effort
       }
-    }
+    },
+    [onUnreadChange]
+  );
 
+  useEffect(() => {
+    cancelledRef.current = false;
     refresh(false);
     const pollId = window.setInterval(() => refresh(true), POLL_INTERVAL_MS);
-
-    try {
-      es = new EventSource(STREAM_URL, { withCredentials: true });
-      es.addEventListener("notification", () => refresh(true));
-      es.onerror = () => {
-        // The browser auto-retries; let it.
-      };
-    } catch {
-      // fall back to polling only
-    }
-
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
       window.clearInterval(pollId);
-      es?.close();
     };
-  }, [onUnreadChange]);
+  }, [refresh]);
+
+  const onNotification = useCallback(() => {
+    refresh(true);
+  }, [refresh]);
+
+  useNotificationsStream(onNotification);
 
   return (
     <NavLink

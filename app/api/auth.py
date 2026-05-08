@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.orm import Session
 
 from ..core.config import get_settings
 from ..core.db import get_db
 from ..core.deps import get_current_user
+from ..core.rate_limit import limiter
 from ..core.security import create_access_token, hash_password, verify_password
 from ..models import User
 from ..schemas.auth import LoginIn, SignupIn, UserOut
@@ -25,7 +26,13 @@ def _set_cookie(response: Response, token: str) -> None:
 
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def signup(payload: SignupIn, response: Response, db: Session = Depends(get_db)) -> User:
+@limiter.limit("10/hour")
+def signup(
+    request: Request,
+    payload: SignupIn,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> User:
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
@@ -44,7 +51,13 @@ def signup(payload: SignupIn, response: Response, db: Session = Depends(get_db))
 
 
 @router.post("/login", response_model=UserOut)
-def login(payload: LoginIn, response: Response, db: Session = Depends(get_db)) -> User:
+@limiter.limit("20/minute")
+def login(
+    request: Request,
+    payload: LoginIn,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> User:
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")

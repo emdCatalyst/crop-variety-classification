@@ -1,5 +1,7 @@
 fastapi
 uvicorn[standard]
+slowapi>=0.1.9
+loguru>=0.7
 sqlalchemy>=2.0,<2.1
 sqlalchemy-libsql
 alembic

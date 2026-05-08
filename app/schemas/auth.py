@@ -9,13 +9,13 @@ class SignupIn(BaseModel):
 
 
 class LoginIn(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 
 class UserOut(BaseModel):
     id: int
-    email: EmailStr
+    email: str
     display_name: str
     role: str
     language: str

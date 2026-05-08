@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { login } from "@/api/auth";
 import { User } from "@/api/client";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { apiErrorMessage } from "@/lib/apiError";
 
 export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void }) {
   const { t } = useTranslation();
@@ -21,8 +22,8 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
       const u = await login(email, password);
       onSignIn(u);
       navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.detail ?? t("auth.login_failed"));
+    } catch (err) {
+      setError(apiErrorMessage(err, t("auth.login_failed")));
     } finally {
       setPending(false);
     }

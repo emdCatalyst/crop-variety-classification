@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Analysis, api } from "@/api/client";
+import { useNotificationsStream } from "@/hooks/useNotificationsStream";
 
 const statusBadge: Record<string, string> = {
   queued: "bg-slate-200 text-slate-700",
@@ -15,12 +16,18 @@ export default function DashboardPage() {
   const [items, setItems] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     api
       .get<Analysis[]>("/analyses")
       .then((r) => setItems(r.data))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  useNotificationsStream(refresh);
 
   const total = items.length;
   const processing = items.filter((a) => a.status === "queued" || a.status === "processing").length;

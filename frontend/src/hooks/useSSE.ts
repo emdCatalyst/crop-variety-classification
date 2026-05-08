@@ -18,8 +18,8 @@ export function useAnalysisEvents(analysisId: number | null, enabled: boolean) {
     const onMessage = (ev: MessageEvent) => {
       try {
         const data = JSON.parse(ev.data) as SSEEvent;
-        setEvents((prev) => [...prev, data]);
         if (data.stage) setStage(data.stage);
+        if (data.message) setEvents((prev) => [...prev, data]);
       } catch {
         /* ignore */
       }

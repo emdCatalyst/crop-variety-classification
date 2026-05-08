@@ -9,7 +9,84 @@
     "reports": "Reports",
     "settings": "Settings",
     "notifications": "Notifications",
+    "messages": "Messages",
+    "menu": "Menu",
+    "users": "Users",
+    "analyses": "Analyses",
+    "broadcast": "Broadcast",
     "sign_out": "Sign out"
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Manage users, analyses, and platform notifications.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "analyses": "Analyses",
+      "broadcast": "Broadcast"
+    },
+    "stats": {
+      "users": "Users",
+      "active": "active",
+      "admins": "Admins",
+      "analyses": "Analyses",
+      "notifications": "Notifications"
+    },
+    "recent_activity": "Recent activity",
+    "no_activity": "Nothing yet.",
+    "users": {
+      "active": "Active",
+      "role_user": "User",
+      "role_admin": "Admin",
+      "confirm_delete": "Permanently delete {{email}} and all their data?",
+      "update_failed": "Could not update the user.",
+      "delete_failed": "Could not delete the user."
+    },
+    "analyses": {
+      "empty": "No analyses match this filter.",
+      "confirm_delete": "Permanently delete \"{{name}}\" — including its uploads and map?",
+      "load_failed": "Could not load analyses.",
+      "delete_failed": "Could not delete the analysis."
+    },
+    "broadcast": {
+      "hint": "Sends an in-app notification to every user. Use sparingly.",
+      "title_label": "Title",
+      "body_label": "Body",
+      "only_active": "Only active users",
+      "send": "Send broadcast",
+      "sent": "Sent to {{count}} user(s).",
+      "failed": "Could not send the broadcast."
+    }
+  },
+  "home": {
+    "headline": "Crop variety classification, in your browser.",
+    "subhead": "Upload a 12-step multispectral GeoTIFF series and Agro-Vision returns the predicted crop variety, a health assessment, and a downloadable PDF report — in English, French, or Arabic.",
+    "get_started": "Get started",
+    "preview_caption": "Sample classification map preview",
+    "feature_inference_title": "CNN+LSTM inference",
+    "feature_inference_body": "A pre-trained model classifies each pixel from 12 timesteps of multispectral imagery and renders a per-plot map.",
+    "feature_health_title": "AI health assessment",
+    "feature_health_body": "An optional LLM advisor (Gemini or Groq) turns NDVI/NDRE/SAVI signals into a plain-language agronomy summary, with a heuristic fallback.",
+    "feature_reports_title": "Reports & languages",
+    "feature_reports_body": "Save farmer notes against each analysis and download a multilingual PDF report — English, French, and Arabic with proper RTL.",
+    "footer": "© {{year}} Agro-Vision"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle_user": "Send a message to the support team.",
+    "subtitle_admin": "Conversations from your users.",
+    "threads": "Threads",
+    "no_threads": "No conversations yet.",
+    "select_thread": "Select a conversation to view messages.",
+    "thread_empty": "No messages in this thread.",
+    "support_team": "Support team",
+    "support_hint": "We'll get back to you here.",
+    "start_conversation": "Send the first message to start the conversation.",
+    "input_placeholder": "Type a message…",
+    "send": "Send",
+    "send_failed": "Could not send the message.",
+    "attachment_label": "[image attachment]",
+    "attachment_too_large": "Attachment must be 5 MB or less."
   },
   "notifications": {
     "title": "Notifications",
@@ -38,6 +115,15 @@
     "completed": "Completed",
     "failed": "Failed",
     "all": "All"
+  },
+  "stages": {
+    "queued": "Queued",
+    "processing": "Processing",
+    "loading": "Loading inputs",
+    "inferring": "Running inference",
+    "rendering": "Rendering results",
+    "done": "Done",
+    "failed": "Failed"
   },
   "auth": {
     "sign_in": "Sign in",

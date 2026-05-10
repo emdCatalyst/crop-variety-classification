@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AdminAnalysisRow, deleteAnalysis, listAnalyses } from "@/api/admin";
+import { SkeletonRow } from "@/components/Skeleton";
 
 const STATUSES = ["all", "queued", "processing", "completed", "failed"] as const;
 
@@ -79,11 +80,17 @@ export default function AdminAnalysesPage() {
       )}
 
       {loading ? (
-        <p className="text-sm text-slate-500">{t("common.loading")}</p>
+        <ul className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <li key={i}>
+              <SkeletonRow />
+            </li>
+          ))}
+        </ul>
       ) : rows.length === 0 ? (
         <p className="text-sm text-slate-500">{t("admin.analyses.empty")}</p>
       ) : (
-        <ul className="bg-white rounded-lg shadow-sm divide-y divide-slate-200">
+        <ul className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
           {rows.map((row) => (
             <li
               key={row.id}

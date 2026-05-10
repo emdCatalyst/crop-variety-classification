@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { listReports, pdfUrl, ReportRow, updateNotes } from "@/api/reports";
+import { SkeletonRow } from "@/components/Skeleton";
 
 const STATUSES = ["all", "queued", "processing", "completed", "failed"] as const;
 
@@ -51,7 +52,16 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-slate-500">{t("common.loading")}</p>
+        <ul className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <li
+              key={i}
+              className="bg-white rounded-xl border border-slate-200 shadow-sm"
+            >
+              <SkeletonRow />
+            </li>
+          ))}
+        </ul>
       ) : rows.length === 0 ? (
         <p className="text-sm text-slate-500">{t("reports.empty")}</p>
       ) : (
@@ -115,15 +125,15 @@ function ReportCard({
     }
   }
 
-  const statusColor: Record<string, string> = {
-    queued: "bg-slate-200 text-slate-700",
-    processing: "bg-amber-100 text-amber-800",
-    completed: "bg-emerald-100 text-emerald-800",
-    failed: "bg-red-100 text-red-700",
+  const statusDot: Record<string, string> = {
+    queued: "bg-slate-400",
+    processing: "bg-amber-500",
+    completed: "bg-emerald-500",
+    failed: "bg-red-500",
   };
 
   return (
-    <li className="bg-white rounded-lg shadow-sm">
+    <li className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="p-4 flex flex-col md:flex-row md:flex-wrap md:items-center gap-3 md:justify-between">
         <div className="min-w-0 md:flex-1">
           <Link
@@ -143,7 +153,14 @@ function ReportCard({
                 <strong>{row.predicted_crop?.replace(/_/g, " ") ?? "—"}</strong>
               </span>
               <span>
-                {t("reports.row_health")}: <strong>{row.health_status ?? "—"}</strong>
+                {t("reports.row_health")}:{" "}
+                <strong>
+                  {row.health_status
+                    ? t(`result.health_codes.${row.health_status}`, {
+                        defaultValue: row.health_status,
+                      })
+                    : "—"}
+                </strong>
               </span>
             </div>
           )}
@@ -159,11 +176,12 @@ function ReportCard({
             </div>
           )}
         </div>
-        <span
-          className={`self-start md:self-auto px-2 py-1 rounded-md text-xs font-medium ${
-            statusColor[row.status] ?? "bg-slate-100"
-          }`}
-        >
+        <span className="self-start md:self-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
+          <span
+            className={`inline-block w-1.5 h-1.5 rounded-full ${
+              statusDot[row.status] ?? "bg-slate-400"
+            }`}
+          />
           {t(`status.${row.status}`)}
         </span>
         <div className="flex flex-wrap items-center gap-2">

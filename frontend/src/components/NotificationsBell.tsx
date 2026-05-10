@@ -27,7 +27,12 @@ export default function NotificationsBell({
       try {
         const n = await fetchUnreadCount();
         if (cancelledRef.current) return;
-        if (playOnIncrease && n > lastUnreadRef.current) {
+        // Capture and immediately bump the ref so a second event arriving
+        // before the first state-commit doesn't see the same "previous"
+        // count and double-chime.
+        const prev = lastUnreadRef.current;
+        lastUnreadRef.current = n;
+        if (playOnIncrease && n > prev) {
           playNotificationChime();
         }
         onUnreadChange(n);

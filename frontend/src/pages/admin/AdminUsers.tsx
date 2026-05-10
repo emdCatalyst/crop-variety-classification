@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Bell } from "lucide-react";
 import { AdminUser, deleteUser, listUsers, updateUser } from "@/api/admin";
 import { User } from "@/api/client";
+import { Select } from "@/components/Select";
+import { SkeletonRow } from "@/components/Skeleton";
+import NotifyUserDialog from "@/components/NotifyUserDialog";
 
 export default function AdminUsersPage({ currentUser }: { currentUser: User }) {
   const { t, i18n } = useTranslation();
   const [rows, setRows] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notifyTarget, setNotifyTarget] = useState<AdminUser | null>(null);
   const locale = i18n.language.split("-")[0];
 
   async function refresh() {
@@ -62,9 +67,15 @@ export default function AdminUsersPage({ currentUser }: { currentUser: User }) {
       )}
 
       {loading ? (
-        <p className="text-sm text-slate-500">{t("common.loading")}</p>
+        <ul className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <li key={i}>
+              <SkeletonRow />
+            </li>
+          ))}
+        </ul>
       ) : (
-        <ul className="bg-white rounded-lg shadow-sm divide-y divide-slate-200">
+        <ul className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
           {rows.map((u) => {
             const isSelf = u.id === currentUser.id;
             return (
@@ -77,15 +88,16 @@ export default function AdminUsersPage({ currentUser }: { currentUser: User }) {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <select
+                  <Select<"user" | "admin">
                     value={u.role}
                     disabled={isSelf}
-                    onChange={(e) => patch(u.id, { role: e.target.value as "user" | "admin" })}
-                    className="text-xs rounded-md border border-slate-300 px-2 py-1 bg-white disabled:opacity-50"
-                  >
-                    <option value="user">{t("admin.users.role_user")}</option>
-                    <option value="admin">{t("admin.users.role_admin")}</option>
-                  </select>
+                    onValueChange={(v) => patch(u.id, { role: v })}
+                    triggerClassName="text-xs py-1"
+                    options={[
+                      { value: "user", label: t("admin.users.role_user") },
+                      { value: "admin", label: t("admin.users.role_admin") },
+                    ]}
+                  />
                   <label className="inline-flex items-center gap-1.5 text-xs text-slate-600">
                     <input
                       type="checkbox"
@@ -95,6 +107,14 @@ export default function AdminUsersPage({ currentUser }: { currentUser: User }) {
                     />
                     {t("admin.users.active")}
                   </label>
+                  <button
+                    onClick={() => setNotifyTarget(u)}
+                    className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50"
+                    title={t("admin.notify.title") ?? ""}
+                  >
+                    <Bell size={12} aria-hidden />
+                    {t("admin.notify.button")}
+                  </button>
                   <button
                     onClick={() => onDelete(u)}
                     disabled={isSelf}
@@ -108,6 +128,14 @@ export default function AdminUsersPage({ currentUser }: { currentUser: User }) {
           })}
         </ul>
       )}
+
+      <NotifyUserDialog
+        open={notifyTarget !== null}
+        onOpenChange={(o) => !o && setNotifyTarget(null)}
+        userId={notifyTarget?.id ?? null}
+        userName={notifyTarget?.display_name ?? ""}
+        userEmail={notifyTarget?.email ?? ""}
+      />
     </div>
   );
 }

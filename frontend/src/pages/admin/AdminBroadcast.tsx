@@ -41,7 +41,7 @@ export default function AdminBroadcastPage() {
   }
 
   return (
-    <div className="space-y-4 max-w-2xl">
+    <div className="space-y-4">
       <header>
         <h1 className="text-2xl font-bold">{t("admin.nav.broadcast")}</h1>
       </header>

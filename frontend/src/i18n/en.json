@@ -34,6 +34,13 @@
     },
     "recent_activity": "Recent activity",
     "no_activity": "Nothing yet.",
+    "charts": {
+      "timeseries": "Activity — last 30 days",
+      "timeseries_hint": "Daily analyses started and new user signups.",
+      "analyses": "Analyses",
+      "new_users": "New users",
+      "status_breakdown": "Status breakdown"
+    },
     "users": {
       "active": "Active",
       "role_user": "User",
@@ -56,6 +63,14 @@
       "send": "Send broadcast",
       "sent": "Sent to {{count}} user(s).",
       "failed": "Could not send the broadcast."
+    },
+    "notify": {
+      "title": "Send notification",
+      "button": "Notify",
+      "send": "Send",
+      "sent": "Notification sent",
+      "sent_hint": "{{name}} will see it on their bell.",
+      "failed": "Could not send the notification."
     }
   },
   "home": {
@@ -69,6 +84,9 @@
     "feature_health_body": "An optional LLM advisor (Gemini or Groq) turns NDVI/NDRE/SAVI signals into a plain-language agronomy summary, with a heuristic fallback.",
     "feature_reports_title": "Reports & languages",
     "feature_reports_body": "Save farmer notes against each analysis and download a multilingual PDF report — English, French, and Arabic with proper RTL.",
+    "backed_by_title": "Backed by",
+    "backed_by_subtitle": "Agronomic expertise behind the model and its recommendations.",
+    "backed_by_email_aria": "Email {{name}}",
     "footer": "© {{year}} Agro-Vision"
   },
   "messages": {
@@ -86,7 +104,14 @@
     "send": "Send",
     "send_failed": "Could not send the message.",
     "attachment_label": "[image attachment]",
-    "attachment_too_large": "Attachment must be 5 MB or less."
+    "attachment_too_large": "Attachment must be 5 MB or less.",
+    "archive": "Archive",
+    "show_archived": "Show archived",
+    "show_active": "Show active",
+    "toggle_archived": "Toggle archived view",
+    "archived_threads": "Archived",
+    "no_archived_threads": "No archived conversations.",
+    "archived_banner": "This conversation is archived (read-only)."
   },
   "notifications": {
     "title": "Notifications",
@@ -95,7 +120,26 @@
     "mark_read": "Mark read",
     "mark_all_read": "Mark all as read",
     "view_analysis": "View analysis",
-    "unread_aria": "{{count}} unread"
+    "unread_aria": "{{count}} unread",
+    "system": {
+      "analysis_completed": {
+        "title": "Analysis “{{name}}” completed",
+        "body": "Predicted crop: {{crop}}. Health: {{health}}."
+      },
+      "analysis_failed": {
+        "title": "Analysis “{{name}}” failed",
+        "body": "{{error}}"
+      },
+      "thread_archived": {
+        "title": "Support conversation archived",
+        "body": "An admin closed your support conversation. You can open a new one any time by sending a new message."
+      }
+    }
+  },
+  "profile": {
+    "role_user": "User",
+    "role_admin": "Admin",
+    "click_to_settings": "Click to open settings."
   },
   "common": {
     "save": "Save",
@@ -139,16 +183,36 @@
     "create_account_link": "Create an account",
     "already_member": "Already a member?",
     "login_failed": "Login failed",
-    "signup_failed": "Sign up failed"
+    "signup_failed": "Sign up failed",
+    "forgot_password": "Forgot password?",
+    "forgot_password_title": "Reset your password",
+    "forgot_password_subtitle": "Enter your email and we'll send you a 6-digit code.",
+    "forgot_request_button": "Send reset code",
+    "forgot_request_sent": "If that email is registered, a code has been sent.",
+    "new_password_label": "New password",
+    "reset_password_button": "Reset password",
+    "verify_email_title": "Verify your email",
+    "verify_email_subtitle": "We sent a 6-digit code to",
+    "verify_code_label": "Verification code",
+    "verify_button": "Verify",
+    "resend_code": "Resend code",
+    "resend_cooldown": "Resend in {{seconds}}s",
+    "resend_sent": "A new code has been sent.",
+    "code_invalid": "That code is invalid or has expired.",
+    "email_not_verified": "Please verify your email to continue."
   },
   "dashboard": {
     "title": "Dashboard",
+    "subtitle": "Your recent analyses and how they're performing.",
     "new_analysis": "New analysis",
     "total_analyses": "Total analyses",
     "processing_count": "Processing",
     "completed_count": "Completed",
     "latest": "Latest analyses",
-    "empty": "No analyses yet. Start your first one."
+    "empty": "No analyses yet. Start your first one.",
+    "analyses_30d": "Analyses — last 30 days",
+    "analyses_30d_hint": "Daily count of analyses you started.",
+    "status_breakdown": "Status breakdown"
   },
   "upload": {
     "title": "New analysis",
@@ -163,6 +227,11 @@
   },
   "result": {
     "classification_map": "Classification map",
+    "confidence_map": "Confidence heatmap",
+    "confidence_legend": "Per-pixel model confidence — red is low, green is high (0–1).",
+    "legend": "Legend",
+    "confidence_low": "low",
+    "confidence_high": "high",
     "summary": "Summary",
     "predicted_crop": "Predicted crop",
     "health": "Health",
@@ -176,7 +245,21 @@
     "class_distribution": "Class distribution",
     "current_stage": "Current stage",
     "processing": "Processing…",
-    "failed": "Analysis failed"
+    "failed": "Analysis failed",
+    "health_codes": {
+      "CRITICAL": "Critical",
+      "STRESSED": "Stressed",
+      "MODERATE": "Moderate",
+      "HEALTHY": "Healthy",
+      "VIGOROUS": "Vigorous"
+    },
+    "trajectory_codes": {
+      "STRONG_DECLINE": "Strongly declining",
+      "DECLINE": "Declining",
+      "STABLE": "Stable",
+      "GROWTH": "Growing",
+      "STRONG_GROWTH": "Strong growth"
+    }
   },
   "reports": {
     "title": "Reports",

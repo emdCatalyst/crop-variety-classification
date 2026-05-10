@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LogOut } from "lucide-react";
 import { logout } from "@/api/auth";
 import { User } from "@/api/client";
 import { unreadCount as fetchUnreadMessages } from "@/api/messages";
 import { playNotificationChime } from "@/lib/chime";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NotificationsBell from "./NotificationsBell";
+import ProfileMenu from "./ProfileMenu";
 
 const MESSAGES_STREAM_URL = "/api/v1/messages/stream";
 
@@ -51,7 +53,9 @@ export default function Layout({
     async (playOnIncrease: boolean) => {
       try {
         const n = await fetchUnreadMessages();
-        if (playOnIncrease && n > lastMessagesRef.current) {
+        const prev = lastMessagesRef.current;
+        lastMessagesRef.current = n;
+        if (playOnIncrease && n > prev) {
           playNotificationChime();
         }
         onUnreadMessagesChange(n);
@@ -151,14 +155,16 @@ export default function Layout({
               authenticated
               onLanguageChange={(lang) => onUserChange?.({ ...user, language: lang })}
             />
-            <span className="text-sm text-slate-600 hidden lg:inline">
-              {user.display_name}
-            </span>
+            <div className="hidden md:block">
+              <ProfileMenu user={user} />
+            </div>
             <button
               onClick={handleSignOut}
-              className="hidden md:inline text-sm text-slate-600 hover:text-brand-700"
+              className="hidden md:inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-brand-700 px-2 py-1 rounded-md hover:bg-slate-100"
+              aria-label={t("nav.sign_out") ?? "Sign out"}
             >
-              {t("nav.sign_out")}
+              <LogOut size={14} aria-hidden />
+              <span className="hidden lg:inline">{t("nav.sign_out")}</span>
             </button>
             <button
               type="button"
@@ -206,8 +212,9 @@ export default function Layout({
               </div>
               <button
                 onClick={handleSignOut}
-                className="text-start px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
+                className="inline-flex items-center gap-2 text-start px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-100"
               >
+                <LogOut size={14} aria-hidden />
                 {t("nav.sign_out")}
               </button>
             </div>
@@ -215,7 +222,9 @@ export default function Layout({
         )}
       </nav>
       <main className="container py-8">
-        <Outlet />
+        <div key={location.pathname} className="animate-fade-in">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

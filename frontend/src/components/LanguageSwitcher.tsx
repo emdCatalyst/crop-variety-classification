@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/i18n/i18n";
 import { updateProfile } from "@/api/settings";
+import { Select } from "./Select";
 
 export default function LanguageSwitcher({
   authenticated = false,
@@ -11,8 +12,7 @@ export default function LanguageSwitcher({
 }) {
   const { i18n, t } = useTranslation();
 
-  async function onChange(ev: React.ChangeEvent<HTMLSelectElement>) {
-    const next = ev.target.value as SupportedLanguage;
+  async function onChange(next: SupportedLanguage) {
     await i18n.changeLanguage(next);
     onLanguageChange?.(next);
     if (authenticated) {
@@ -25,20 +25,22 @@ export default function LanguageSwitcher({
   }
 
   return (
-    <label className="text-sm text-slate-600 inline-flex items-center gap-2">
-      <span className="sr-only">{t("common.language")}</span>
-      <select
-        value={i18n.language.split("-")[0]}
-        onChange={onChange}
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm focus:border-brand-500 focus:ring-brand-500"
-      >
-        {SUPPORTED_LANGUAGES.map((lng) => (
-          <option key={lng} value={lng}>
-            {labelFor(lng)}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select<SupportedLanguage>
+      value={(i18n.language.split("-")[0] as SupportedLanguage) ?? "en"}
+      onValueChange={onChange}
+      ariaLabel={t("common.language") ?? undefined}
+      options={SUPPORTED_LANGUAGES.map((lng) => ({
+        value: lng,
+        label: (
+          <span className="inline-flex items-center gap-2">
+            <span aria-hidden className="text-base leading-none">
+              {flagFor(lng)}
+            </span>
+            <span>{labelFor(lng)}</span>
+          </span>
+        ),
+      }))}
+    />
   );
 }
 
@@ -50,5 +52,16 @@ function labelFor(code: SupportedLanguage): string {
       return "Français";
     case "ar":
       return "العربية";
+  }
+}
+
+function flagFor(code: SupportedLanguage): string {
+  switch (code) {
+    case "en":
+      return "🇬🇧";
+    case "fr":
+      return "🇫🇷";
+    case "ar":
+      return "🇸🇦";
   }
 }

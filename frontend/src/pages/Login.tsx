@@ -23,6 +23,11 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
       onSignIn(u);
       navigate("/dashboard");
     } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
+      if (detail === "email_not_verified") {
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setError(apiErrorMessage(err, t("auth.login_failed")));
     } finally {
       setPending(false);
@@ -69,6 +74,12 @@ export default function LoginPage({ onSignIn }: { onSignIn: (u: User) => void })
         >
           {pending ? t("auth.signing_in") : t("auth.sign_in")}
         </button>
+
+        <div className="text-sm text-center">
+          <Link to="/forgot-password" className="text-brand-700 hover:underline">
+            {t("auth.forgot_password")}
+          </Link>
+        </div>
 
         <div className="text-sm text-slate-600 text-center">
           {t("auth.new_here")}{" "}

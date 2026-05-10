@@ -83,11 +83,33 @@ export async function deleteAnalysis(id: number): Promise<void> {
   await api.delete(`/admin/analyses/${id}`);
 }
 
+export type AdminTimeseriesPoint = {
+  date: string;
+  analyses: number;
+  new_users: number;
+};
+
+export async function getAdminTimeseries(days = 30): Promise<AdminTimeseriesPoint[]> {
+  const { data } = await api.get<AdminTimeseriesPoint[]>("/admin/stats/timeseries", {
+    params: { days },
+  });
+  return data;
+}
+
 export async function broadcast(payload: {
   title: string;
   body: string;
   only_active?: boolean;
 }): Promise<{ sent: number }> {
   const { data } = await api.post<{ sent: number }>("/admin/notifications/broadcast", payload);
+  return data;
+}
+
+export async function notifyUser(payload: {
+  user_id: number;
+  title: string;
+  body: string;
+}): Promise<{ id: number }> {
+  const { data } = await api.post<{ id: number }>("/admin/notifications/notify", payload);
   return data;
 }

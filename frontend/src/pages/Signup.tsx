@@ -2,11 +2,10 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { signup } from "@/api/auth";
-import { User } from "@/api/client";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { apiErrorMessage } from "@/lib/apiError";
 
-export default function SignupPage({ onSignIn }: { onSignIn: (u: User) => void }) {
+export default function SignupPage() {
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,14 +19,13 @@ export default function SignupPage({ onSignIn }: { onSignIn: (u: User) => void }
     setPending(true);
     setError(null);
     try {
-      const u = await signup({
+      await signup({
         email,
         password,
         display_name: name,
         language: i18n.language.split("-")[0],
       });
-      onSignIn(u);
-      navigate("/dashboard");
+      navigate(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(apiErrorMessage(err, t("auth.signup_failed")));
     } finally {

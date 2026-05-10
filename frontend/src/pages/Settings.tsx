@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { User } from "@/api/client";
 import { changePassword, updateProfile } from "@/api/settings";
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/i18n/i18n";
+import { Select } from "@/components/Select";
 
 export default function SettingsPage({
   user,
@@ -63,10 +64,10 @@ export default function SettingsPage({
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
 
-      <section className="bg-white rounded-lg shadow-sm p-6">
+      <section className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
         <h2 className="font-semibold mb-4">{t("settings.profile")}</h2>
         <form onSubmit={saveProfile} className="space-y-4">
           <label className="block text-sm">
@@ -78,20 +79,18 @@ export default function SettingsPage({
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500"
             />
           </label>
-          <label className="block text-sm">
-            {t("settings.language")}
-            <select
+          <div className="text-sm">
+            <label className="block mb-1">{t("settings.language")}</label>
+            <Select<SupportedLanguage>
               value={language}
-              onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500"
-            >
-              {SUPPORTED_LANGUAGES.map((lng) => (
-                <option key={lng} value={lng}>
-                  {t(`settings.language_${lng}`)}
-                </option>
-              ))}
-            </select>
-          </label>
+              onValueChange={setLanguage}
+              triggerClassName="w-full justify-between"
+              options={SUPPORTED_LANGUAGES.map((lng) => ({
+                value: lng,
+                label: t(`settings.language_${lng}`),
+              }))}
+            />
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="submit"
@@ -113,7 +112,7 @@ export default function SettingsPage({
         </form>
       </section>
 
-      <section className="bg-white rounded-lg shadow-sm p-6">
+      <section className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
         <h2 className="font-semibold mb-4">{t("settings.change_password")}</h2>
         <form onSubmit={savePassword} className="space-y-4">
           <label className="block text-sm">

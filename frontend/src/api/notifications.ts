@@ -8,6 +8,8 @@ export type Notification = {
   analysis_id: number | null;
   read_at: string | null;
   created_at: string;
+  i18n_key: string | null;
+  i18n_params: Record<string, string | number> | null;
 };
 
 export async function listNotifications(): Promise<Notification[]> {

@@ -7,6 +7,8 @@ import Layout from "./components/Layout";
 import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
+import VerifyEmailPage from "./pages/VerifyEmail";
+import ForgotPasswordPage from "./pages/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
 import UploadPage from "./pages/Upload";
 import ResultPage from "./pages/Result";
@@ -46,7 +48,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage onSignIn={setUser} />} />
-        <Route path="/signup" element={<SignupPage onSignIn={setUser} />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage onSignIn={setUser} />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage onSignIn={setUser} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );

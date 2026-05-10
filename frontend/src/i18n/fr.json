@@ -34,6 +34,13 @@
     },
     "recent_activity": "Activité récente",
     "no_activity": "Rien pour l'instant.",
+    "charts": {
+      "timeseries": "Activité — 30 derniers jours",
+      "timeseries_hint": "Analyses lancées et nouveaux utilisateurs par jour.",
+      "analyses": "Analyses",
+      "new_users": "Nouveaux utilisateurs",
+      "status_breakdown": "Répartition des statuts"
+    },
     "users": {
       "active": "Actif",
       "role_user": "Utilisateur",
@@ -56,6 +63,14 @@
       "send": "Envoyer la diffusion",
       "sent": "Envoyé à {{count}} utilisateur(s).",
       "failed": "Impossible d'envoyer la diffusion."
+    },
+    "notify": {
+      "title": "Envoyer une notification",
+      "button": "Notifier",
+      "send": "Envoyer",
+      "sent": "Notification envoyée",
+      "sent_hint": "{{name}} la verra sur sa cloche.",
+      "failed": "Impossible d'envoyer la notification."
     }
   },
   "home": {
@@ -69,6 +84,9 @@
     "feature_health_body": "Un conseiller LLM optionnel (Gemini ou Groq) transforme les signaux NDVI/NDRE/SAVI en résumé agronomique en langage clair, avec un repli heuristique.",
     "feature_reports_title": "Rapports & langues",
     "feature_reports_body": "Enregistrez les notes du cultivateur sur chaque analyse et téléchargez un rapport PDF multilingue — anglais, français et arabe avec un RTL correct.",
+    "backed_by_title": "Soutenu par",
+    "backed_by_subtitle": "L'expertise agronomique derrière le modèle et ses recommandations.",
+    "backed_by_email_aria": "Envoyer un e-mail à {{name}}",
     "footer": "© {{year}} Agro-Vision"
   },
   "messages": {
@@ -86,7 +104,14 @@
     "send": "Envoyer",
     "send_failed": "Impossible d'envoyer le message.",
     "attachment_label": "[image jointe]",
-    "attachment_too_large": "La pièce jointe doit faire 5 Mo ou moins."
+    "attachment_too_large": "La pièce jointe doit faire 5 Mo ou moins.",
+    "archive": "Archiver",
+    "show_archived": "Voir archivées",
+    "show_active": "Voir actives",
+    "toggle_archived": "Basculer l'affichage des archives",
+    "archived_threads": "Archivées",
+    "no_archived_threads": "Aucune conversation archivée.",
+    "archived_banner": "Cette conversation est archivée (lecture seule)."
   },
   "notifications": {
     "title": "Notifications",
@@ -95,7 +120,26 @@
     "mark_read": "Marquer comme lu",
     "mark_all_read": "Tout marquer comme lu",
     "view_analysis": "Voir l'analyse",
-    "unread_aria": "{{count}} non lues"
+    "unread_aria": "{{count}} non lues",
+    "system": {
+      "analysis_completed": {
+        "title": "Analyse «{{name}}» terminée",
+        "body": "Culture prédite : {{crop}}. Santé : {{health}}."
+      },
+      "analysis_failed": {
+        "title": "L'analyse «{{name}}» a échoué",
+        "body": "{{error}}"
+      },
+      "thread_archived": {
+        "title": "Conversation d'assistance archivée",
+        "body": "Un administrateur a clôturé votre conversation. Vous pouvez en démarrer une nouvelle à tout moment en envoyant un nouveau message."
+      }
+    }
+  },
+  "profile": {
+    "role_user": "Utilisateur",
+    "role_admin": "Admin",
+    "click_to_settings": "Cliquez pour ouvrir les paramètres."
   },
   "common": {
     "save": "Enregistrer",
@@ -139,16 +183,36 @@
     "create_account_link": "Créer un compte",
     "already_member": "Déjà inscrit ?",
     "login_failed": "Échec de la connexion",
-    "signup_failed": "Échec de l'inscription"
+    "signup_failed": "Échec de l'inscription",
+    "forgot_password": "Mot de passe oublié ?",
+    "forgot_password_title": "Réinitialiser votre mot de passe",
+    "forgot_password_subtitle": "Entrez votre courriel et nous vous enverrons un code à 6 chiffres.",
+    "forgot_request_button": "Envoyer le code",
+    "forgot_request_sent": "Si ce courriel est enregistré, un code vient d'être envoyé.",
+    "new_password_label": "Nouveau mot de passe",
+    "reset_password_button": "Réinitialiser le mot de passe",
+    "verify_email_title": "Vérifier votre courriel",
+    "verify_email_subtitle": "Nous avons envoyé un code à 6 chiffres à",
+    "verify_code_label": "Code de vérification",
+    "verify_button": "Vérifier",
+    "resend_code": "Renvoyer le code",
+    "resend_cooldown": "Renvoyer dans {{seconds}} s",
+    "resend_sent": "Un nouveau code a été envoyé.",
+    "code_invalid": "Ce code est invalide ou a expiré.",
+    "email_not_verified": "Veuillez vérifier votre courriel pour continuer."
   },
   "dashboard": {
     "title": "Tableau de bord",
+    "subtitle": "Vos dernières analyses et leur progression.",
     "new_analysis": "Nouvelle analyse",
     "total_analyses": "Analyses totales",
     "processing_count": "En traitement",
     "completed_count": "Terminées",
     "latest": "Dernières analyses",
-    "empty": "Aucune analyse pour le moment. Lancez la première."
+    "empty": "Aucune analyse pour le moment. Lancez la première.",
+    "analyses_30d": "Analyses — 30 derniers jours",
+    "analyses_30d_hint": "Nombre quotidien d'analyses lancées.",
+    "status_breakdown": "Répartition des statuts"
   },
   "upload": {
     "title": "Nouvelle analyse",
@@ -163,6 +227,11 @@
   },
   "result": {
     "classification_map": "Carte de classification",
+    "confidence_map": "Carte de confiance",
+    "confidence_legend": "Confiance du modèle par pixel — rouge faible, vert élevé (0–1).",
+    "legend": "Légende",
+    "confidence_low": "faible",
+    "confidence_high": "élevée",
     "summary": "Résumé",
     "predicted_crop": "Culture prédite",
     "health": "Santé",
@@ -176,7 +245,21 @@
     "class_distribution": "Distribution des classes",
     "current_stage": "Étape actuelle",
     "processing": "Traitement…",
-    "failed": "L'analyse a échoué"
+    "failed": "L'analyse a échoué",
+    "health_codes": {
+      "CRITICAL": "Critique",
+      "STRESSED": "En détresse",
+      "MODERATE": "Modéré",
+      "HEALTHY": "Sain",
+      "VIGOROUS": "Vigoureux"
+    },
+    "trajectory_codes": {
+      "STRONG_DECLINE": "Déclin marqué",
+      "DECLINE": "En déclin",
+      "STABLE": "Stable",
+      "GROWTH": "En croissance",
+      "STRONG_GROWTH": "Forte croissance"
+    }
   },
   "reports": {
     "title": "Rapports",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -8,6 +8,7 @@ import {
   markRead,
   Notification,
 } from "@/api/notifications";
+import { useNotificationsStream } from "@/hooks/useNotificationsStream";
 
 export default function NotificationsPage({
   onUnreadChange,
@@ -19,20 +20,34 @@ export default function NotificationsPage({
   const [loading, setLoading] = useState(true);
   const locale = i18n.language.split("-")[0];
 
-  async function refresh() {
-    setLoading(true);
-    try {
-      const data = await listNotifications();
-      setItems(data);
-      onUnreadChange?.(data.filter((n) => n.read_at === null).length);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const load = useCallback(
+    async (showSpinner: boolean) => {
+      if (showSpinner) setLoading(true);
+      try {
+        const data = await listNotifications();
+        setItems(data);
+        onUnreadChange?.(data.filter((n) => n.read_at === null).length);
+      } finally {
+        if (showSpinner) setLoading(false);
+      }
+    },
+    [onUnreadChange]
+  );
+
+  const refresh = useCallback(() => {
+    void load(true);
+  }, [load]);
+
+  const refreshSilent = useCallback(() => {
+    void load(false);
+  }, [load]);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
+
+  // Live-update when a new notification lands while the page is open.
+  useNotificationsStream(refreshSilent);
 
   async function onMarkRead(id: number) {
     await markRead(id);
@@ -58,7 +73,7 @@ export default function NotificationsPage({
   const unread = items.filter((n) => n.read_at === null).length;
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{t("notifications.title")}</h1>
@@ -91,8 +106,22 @@ export default function NotificationsPage({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium">{n.title}</div>
-                <div className="text-sm text-slate-700 mt-0.5">{n.body}</div>
+                <div className="font-medium">
+                  {n.i18n_key
+                    ? t(`notifications.system.${n.i18n_key}.title`, {
+                        ...(n.i18n_params ?? {}),
+                        defaultValue: n.title,
+                      })
+                    : n.title}
+                </div>
+                <div className="text-sm text-slate-700 mt-0.5">
+                  {n.i18n_key
+                    ? t(`notifications.system.${n.i18n_key}.body`, {
+                        ...(n.i18n_params ?? {}),
+                        defaultValue: n.body,
+                      })
+                    : n.body}
+                </div>
                 <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
                   <span>{new Date(n.created_at).toLocaleString(locale)}</span>
                   {n.analysis_id && (

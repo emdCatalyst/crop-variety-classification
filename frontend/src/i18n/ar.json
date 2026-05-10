@@ -14,6 +14,9 @@
     "feature_health_body": "مستشار اختياري (Gemini أو Groq) يحوّل مؤشرات NDVI/NDRE/SAVI إلى تحليل زراعي مفهوم، مع بديل قائم على القواعد عند تعذّر الوصول.",
     "feature_reports_title": "تقارير ولغات متعددة",
     "feature_reports_body": "احفظ ملاحظات المزارع مع كل تحليل وحمّل تقريراً بصيغة PDF متعدد اللغات — الإنجليزية والفرنسية والعربية بدعم كامل لاتجاه RTL.",
+    "backed_by_title": "بدعم من",
+    "backed_by_subtitle": "الخبرة الزراعية وراء النموذج وتوصياته.",
+    "backed_by_email_aria": "أرسل بريداً إلى {{name}}",
     "footer": "© {{year}} أجرو-فيجن"
   },
   "messages": {
@@ -31,7 +34,14 @@
     "send": "إرسال",
     "send_failed": "تعذّر إرسال الرسالة.",
     "attachment_label": "[مرفق صورة]",
-    "attachment_too_large": "يجب ألا يتجاوز حجم المرفق 5 ميجابايت."
+    "attachment_too_large": "يجب ألا يتجاوز حجم المرفق 5 ميجابايت.",
+    "archive": "أرشفة",
+    "show_archived": "عرض المؤرشفة",
+    "show_active": "عرض النشطة",
+    "toggle_archived": "تبديل عرض المؤرشفة",
+    "archived_threads": "المؤرشفة",
+    "no_archived_threads": "لا توجد محادثات مؤرشفة.",
+    "archived_banner": "هذه المحادثة مؤرشفة (للقراءة فقط)."
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -64,6 +74,13 @@
     },
     "recent_activity": "أحدث النشاط",
     "no_activity": "لا يوجد نشاط بعد.",
+    "charts": {
+      "timeseries": "النشاط — آخر 30 يوماً",
+      "timeseries_hint": "التحليلات اليومية وتسجيلات المستخدمين الجدد.",
+      "analyses": "التحليلات",
+      "new_users": "المستخدمون الجدد",
+      "status_breakdown": "توزيع الحالات"
+    },
     "users": {
       "active": "نشط",
       "role_user": "مستخدم",
@@ -86,6 +103,14 @@
       "send": "إرسال الإشعار العام",
       "sent": "أُرسل إلى {{count}} مستخدم.",
       "failed": "تعذّر إرسال الإشعار."
+    },
+    "notify": {
+      "title": "إرسال إشعار",
+      "button": "إشعار",
+      "send": "إرسال",
+      "sent": "تم إرسال الإشعار",
+      "sent_hint": "سيظهر لـ {{name}} على جرس الإشعارات.",
+      "failed": "تعذّر إرسال الإشعار."
     }
   },
   "notifications": {
@@ -95,7 +120,26 @@
     "mark_read": "وضع علامة مقروء",
     "mark_all_read": "تحديد الكل كمقروء",
     "view_analysis": "عرض التحليل",
-    "unread_aria": "{{count}} غير مقروءة"
+    "unread_aria": "{{count}} غير مقروءة",
+    "system": {
+      "analysis_completed": {
+        "title": "اكتمل التحليل «{{name}}»",
+        "body": "المحصول المتوقع: {{crop}}. الحالة الصحية: {{health}}."
+      },
+      "analysis_failed": {
+        "title": "فشل التحليل «{{name}}»",
+        "body": "{{error}}"
+      },
+      "thread_archived": {
+        "title": "تمت أرشفة محادثة الدعم",
+        "body": "أغلق المسؤول محادثة الدعم الخاصة بك. يمكنك بدء محادثة جديدة في أي وقت بإرسال رسالة جديدة."
+      }
+    }
+  },
+  "profile": {
+    "role_user": "مستخدم",
+    "role_admin": "مسؤول",
+    "click_to_settings": "اضغط لفتح الإعدادات."
   },
   "common": {
     "save": "حفظ",
@@ -139,16 +183,36 @@
     "create_account_link": "أنشئ حساباً",
     "already_member": "لديك حساب؟",
     "login_failed": "فشل تسجيل الدخول",
-    "signup_failed": "فشل إنشاء الحساب"
+    "signup_failed": "فشل إنشاء الحساب",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "forgot_password_title": "إعادة تعيين كلمة المرور",
+    "forgot_password_subtitle": "أدخل بريدك الإلكتروني وسنرسل لك رمزاً مكوّناً من 6 أرقام.",
+    "forgot_request_button": "إرسال رمز إعادة التعيين",
+    "forgot_request_sent": "إن كان البريد مسجَّلاً، فقد أُرسل رمز إليه.",
+    "new_password_label": "كلمة المرور الجديدة",
+    "reset_password_button": "إعادة تعيين كلمة المرور",
+    "verify_email_title": "تحقّق من بريدك الإلكتروني",
+    "verify_email_subtitle": "أرسلنا رمزاً مكوّناً من 6 أرقام إلى",
+    "verify_code_label": "رمز التحقق",
+    "verify_button": "تحقّق",
+    "resend_code": "إعادة إرسال الرمز",
+    "resend_cooldown": "إعادة الإرسال خلال {{seconds}} ث",
+    "resend_sent": "تم إرسال رمز جديد.",
+    "code_invalid": "الرمز غير صحيح أو انتهت صلاحيته.",
+    "email_not_verified": "يرجى التحقق من بريدك الإلكتروني للمتابعة."
   },
   "dashboard": {
     "title": "لوحة التحكم",
+    "subtitle": "آخر تحليلاتك ومدى تقدمها.",
     "new_analysis": "تحليل جديد",
     "total_analyses": "إجمالي التحليلات",
     "processing_count": "قيد المعالجة",
     "completed_count": "المكتملة",
     "latest": "أحدث التحليلات",
-    "empty": "لا توجد تحليلات بعد. ابدأ التحليل الأول."
+    "empty": "لا توجد تحليلات بعد. ابدأ التحليل الأول.",
+    "analyses_30d": "التحليلات — آخر 30 يوماً",
+    "analyses_30d_hint": "العدد اليومي للتحليلات التي بدأتها.",
+    "status_breakdown": "توزيع الحالات"
   },
   "upload": {
     "title": "تحليل جديد",
@@ -163,6 +227,11 @@
   },
   "result": {
     "classification_map": "خريطة التصنيف",
+    "confidence_map": "خريطة الثقة",
+    "confidence_legend": "ثقة النموذج لكل بكسل — الأحمر منخفض، الأخضر مرتفع (0-1).",
+    "legend": "المفتاح",
+    "confidence_low": "منخفض",
+    "confidence_high": "مرتفع",
     "summary": "ملخص",
     "predicted_crop": "المحصول المتوقع",
     "health": "الصحة",
@@ -176,7 +245,21 @@
     "class_distribution": "توزيع الفئات",
     "current_stage": "المرحلة الحالية",
     "processing": "جارٍ المعالجة…",
-    "failed": "فشل التحليل"
+    "failed": "فشل التحليل",
+    "health_codes": {
+      "CRITICAL": "حرجة",
+      "STRESSED": "تحت ضغط",
+      "MODERATE": "متوسطة",
+      "HEALTHY": "سليمة",
+      "VIGOROUS": "نشطة"
+    },
+    "trajectory_codes": {
+      "STRONG_DECLINE": "تراجع حاد",
+      "DECLINE": "في تراجع",
+      "STABLE": "مستقرة",
+      "GROWTH": "في نمو",
+      "STRONG_GROWTH": "نمو قوي"
+    }
   },
   "reports": {
     "title": "التقارير",

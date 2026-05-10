@@ -11,6 +11,7 @@ export type User = {
   display_name: string;
   role: string;
   language: string;
+  email_verified: boolean;
 };
 
 export type Analysis = {
@@ -33,9 +34,25 @@ export type AnalysisResult = {
   mean_savi: number;
   temporal_trend: number;
   map_url: string;
+  confidence_url: string | null;
   class_distribution: Record<string, number>;
+  legend: Record<string, string> | null;
   farmer_notes: string | null;
   observed_at: string | null;
 };
 
 export type AnalysisDetail = Analysis & { result: AnalysisResult | null };
+
+export type AnalysisDailyPoint = {
+  date: string;
+  count: number;
+  completed: number;
+  failed: number;
+};
+
+export async function fetchAnalysesTimeseries(days = 30): Promise<AnalysisDailyPoint[]> {
+  const { data } = await api.get<AnalysisDailyPoint[]>("/analyses/stats/timeseries", {
+    params: { days },
+  });
+  return data;
+}

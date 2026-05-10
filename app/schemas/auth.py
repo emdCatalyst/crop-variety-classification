@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -19,6 +21,31 @@ class UserOut(BaseModel):
     display_name: str
     role: str
     language: str
+    email_verified: bool
 
     class Config:
         from_attributes = True
+
+
+class SignupOut(BaseModel):
+    email: EmailStr
+    status: Literal["verification_required"] = "verification_required"
+
+
+class VerifyEmailIn(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class ResendVerificationIn(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordIn(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+    new_password: str = Field(min_length=8, max_length=128)

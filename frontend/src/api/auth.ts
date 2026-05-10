@@ -1,5 +1,10 @@
 import { api, User } from "./client";
 
+export type SignupResponse = {
+  email: string;
+  status: "verification_required";
+};
+
 export async function fetchMe(): Promise<User | null> {
   try {
     const { data } = await api.get<User>("/auth/me");
@@ -19,11 +24,37 @@ export async function signup(payload: {
   password: string;
   display_name: string;
   language?: string;
-}): Promise<User> {
-  const { data } = await api.post<User>("/auth/signup", { language: "en", ...payload });
+}): Promise<SignupResponse> {
+  const { data } = await api.post<SignupResponse>("/auth/signup", { language: "en", ...payload });
   return data;
 }
 
 export async function logout(): Promise<void> {
   await api.post("/auth/logout");
+}
+
+export async function verifyEmail(email: string, code: string): Promise<User> {
+  const { data } = await api.post<User>("/auth/verify-email", { email, code });
+  return data;
+}
+
+export async function resendVerification(email: string): Promise<void> {
+  await api.post("/auth/resend-verification", { email });
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await api.post("/auth/forgot-password", { email });
+}
+
+export async function resetPassword(
+  email: string,
+  code: string,
+  newPassword: string,
+): Promise<User> {
+  const { data } = await api.post<User>("/auth/reset-password", {
+    email,
+    code,
+    new_password: newPassword,
+  });
+  return data;
 }

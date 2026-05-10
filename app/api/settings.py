@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from ..core.config import get_settings
 from ..core.db import get_db
 from ..core.deps import get_current_user
-from ..core.security import hash_password, verify_password
+from ..core.security import create_access_token, hash_password, verify_password
 from ..models import User
 from ..schemas.auth import UserOut
 
@@ -49,5 +50,21 @@ def change_password(
             detail="Current password is incorrect",
         )
     user.password_hash = hash_password(payload.new_password)
+    # Invalidate every JWT issued under the previous password — including any
+    # other device this user might be signed in on.
+    user.token_version = (user.token_version or 1) + 1
     db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    db.refresh(user)
+    # Re-issue the cookie on this device so the caller stays signed in.
+    s = get_settings()
+    resp = Response(status_code=status.HTTP_204_NO_CONTENT)
+    resp.set_cookie(
+        key=s.cookie_name,
+        value=create_access_token(user.id, {"tv": user.token_version}),
+        httponly=True,
+        secure=s.cookie_secure,
+        samesite=s.cookie_samesite,
+        max_age=s.jwt_ttl_minutes * 60,
+        path="/",
+    )
+    return resp

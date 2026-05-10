@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ...core.db import get_db
 from ...core.deps import require_admin
 from ...models import User
+from ...services.cleanup import purge_user_artifacts
 
 router = APIRouter(prefix="/users")
 
@@ -84,6 +85,7 @@ def delete_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if target.id == admin.id:
         raise HTTPException(status_code=400, detail="Refusing to delete yourself")
+    purge_user_artifacts(target, db)
     db.delete(target)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

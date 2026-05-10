@@ -22,8 +22,11 @@ class Result(Base, TimestampMixin):
     temporal_trend: Mapped[float] = mapped_column()
     map_png_path: Mapped[str] = mapped_column(String(512))
     map_url: Mapped[str] = mapped_column(String(512))
+    confidence_png_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    confidence_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     geotiff_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
     class_distribution: Mapped[dict] = mapped_column(JSON)
+    legend: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     farmer_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     observed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -16,7 +16,22 @@ def _build_engine() -> Engine:
     if url.startswith("libsql") or url.startswith("sqlite+libsql"):
         if s.turso_auth_token:
             connect_args = {"auth_token": s.turso_auth_token}
-    return create_engine(url, connect_args=connect_args, future=True)
+    eng = create_engine(url, connect_args=connect_args, future=True)
+    # SQLite ships with foreign-key enforcement OFF per connection, so
+    # `ondelete=CASCADE` on messages / notifications wouldn't fire — deleting a
+    # user would silently orphan those rows. Turn it on for every new
+    # connection. Harmless on libsql/Turso (it's already on by default there).
+    if url.startswith("sqlite") or url.startswith("libsql"):
+        @event.listens_for(eng, "connect")
+        def _enable_sqlite_fk(dbapi_connection, _):  # noqa: ANN001
+            try:
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON")
+                cursor.close()
+            except Exception:
+                # Not all DB-API drivers support PRAGMA; ignore if unsupported.
+                pass
+    return eng
 
 
 engine: Engine = _build_engine()

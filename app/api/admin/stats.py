@@ -1,8 +1,8 @@
 """Admin dashboard stats — counts + recent activity."""
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -118,3 +118,48 @@ def recent_activity(
 
     rows.sort(key=lambda r: r.at, reverse=True)
     return rows[:limit]
+
+
+class AdminTimeseriesPoint(BaseModel):
+    date: str
+    analyses: int
+    new_users: int
+
+
+@router.get("/timeseries", response_model=list[AdminTimeseriesPoint])
+def admin_timeseries(
+    days: int = Query(default=30, ge=1, le=180),
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+) -> list[AdminTimeseriesPoint]:
+    today = datetime.now(timezone.utc).date()
+    start = today - timedelta(days=days - 1)
+    start_dt = datetime.combine(start, datetime.min.time(), tzinfo=timezone.utc)
+
+    analyses_rows = (
+        db.query(func.date(Analysis.created_at), func.count(Analysis.id))
+        .filter(Analysis.created_at >= start_dt)
+        .group_by(func.date(Analysis.created_at))
+        .all()
+    )
+    user_rows = (
+        db.query(func.date(User.created_at), func.count(User.id))
+        .filter(User.created_at >= start_dt)
+        .group_by(func.date(User.created_at))
+        .all()
+    )
+
+    a_by_day = {str(d): int(c) for d, c in analyses_rows}
+    u_by_day = {str(d): int(c) for d, c in user_rows}
+
+    out: list[AdminTimeseriesPoint] = []
+    for i in range(days):
+        d = (start + timedelta(days=i)).isoformat()
+        out.append(
+            AdminTimeseriesPoint(
+                date=d,
+                analyses=a_by_day.get(d, 0),
+                new_users=u_by_day.get(d, 0),
+            )
+        )
+    return out

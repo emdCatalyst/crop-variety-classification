@@ -1,7 +1,5 @@
 """Admin analysis management — list across all users + delete with disk cascade."""
-import shutil
 from datetime import datetime
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel
@@ -10,6 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 from ...core.db import get_db
 from ...core.deps import require_admin
 from ...models import Analysis, AnalysisStatus, User
+from ...services.cleanup import purge_analysis_artifacts
 
 router = APIRouter(prefix="/analyses")
 
@@ -74,12 +73,7 @@ def delete_analysis_admin(
     if not a:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
 
-    # Best-effort cleanup of on-disk artifacts before the row is deleted.
-    if a.upload_dir:
-        shutil.rmtree(a.upload_dir, ignore_errors=True)
-    if a.result and a.result.map_png_path:
-        Path(a.result.map_png_path).unlink(missing_ok=True)
-
+    purge_analysis_artifacts(a)
     db.delete(a)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

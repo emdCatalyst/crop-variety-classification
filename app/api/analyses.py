@@ -1,5 +1,6 @@
 import re
-import shutil
+
+from datetime import datetime, timedelta, timezone
 
 from fastapi import (
     APIRouter,
@@ -8,11 +9,15 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    Query,
     Request,
     UploadFile,
     status,
 )
+from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+import shutil
 
 from ..core.config import get_settings
 from ..core.db import get_db
@@ -20,6 +25,7 @@ from ..core.deps import get_current_user
 from ..core.rate_limit import limiter
 from ..models import Analysis, AnalysisStatus, Image, User
 from ..schemas.analysis import AnalysisDetailOut, AnalysisOut
+from ..services.cleanup import purge_analysis_artifacts
 from ..services.inference_runner import run_analysis
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
@@ -40,6 +46,59 @@ def list_analyses(db: Session = Depends(get_db), user: User = Depends(get_curren
         .order_by(Analysis.created_at.desc())
         .all()
     )
+
+
+class TimeseriesPoint(BaseModel):
+    date: str
+    count: int
+    completed: int
+    failed: int
+
+
+@router.get("/stats/timeseries", response_model=list[TimeseriesPoint])
+def analyses_timeseries(
+    days: int = Query(default=30, ge=1, le=180),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> list[TimeseriesPoint]:
+    today = datetime.now(timezone.utc).date()
+    start = today - timedelta(days=days - 1)
+    start_dt = datetime.combine(start, datetime.min.time(), tzinfo=timezone.utc)
+
+    rows = (
+        db.query(
+            func.date(Analysis.created_at).label("d"),
+            Analysis.status,
+            func.count(Analysis.id),
+        )
+        .filter(Analysis.user_id == user.id, Analysis.created_at >= start_dt)
+        .group_by("d", Analysis.status)
+        .all()
+    )
+
+    buckets: dict[str, dict[str, int]] = {}
+    for d_raw, st, cnt in rows:
+        d = str(d_raw)
+        bucket = buckets.setdefault(d, {"count": 0, "completed": 0, "failed": 0})
+        bucket["count"] += int(cnt)
+        st_val = st.value if hasattr(st, "value") else str(st)
+        if st_val in ("completed", "failed"):
+            bucket[st_val] += int(cnt)
+
+    out: list[TimeseriesPoint] = []
+    for i in range(days):
+        d = start + timedelta(days=i)
+        key = d.isoformat()
+        b = buckets.get(key, {"count": 0, "completed": 0, "failed": 0})
+        out.append(
+            TimeseriesPoint(
+                date=key,
+                count=b["count"],
+                completed=b["completed"],
+                failed=b["failed"],
+            )
+        )
+    return out
 
 
 @router.post("", response_model=AnalysisOut, status_code=status.HTTP_201_CREATED)
@@ -133,7 +192,6 @@ def delete_analysis(
     analysis = db.get(Analysis, analysis_id)
     if not analysis or analysis.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-    if analysis.upload_dir:
-        shutil.rmtree(analysis.upload_dir, ignore_errors=True)
+    purge_analysis_artifacts(analysis)
     db.delete(analysis)
     db.commit()

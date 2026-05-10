@@ -15,10 +15,12 @@ class MessageOut(BaseModel):
     read_at: datetime | None
     created_at: datetime
     archived: bool
+    conversation_id: str
 
 
 class ThreadOut(BaseModel):
     thread_key: str
+    conversation_id: str
     other_user_id: int
     other_user_name: str
     other_user_role: str

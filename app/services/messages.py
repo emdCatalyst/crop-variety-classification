@@ -7,11 +7,12 @@ Image attachments are limited to small JPEG/PNG/WEBP and stored under
 from __future__ import annotations
 
 import re
+import uuid
 from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from ..models import User
+from ..models import Message, User
 
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
 MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024  # 5 MB
@@ -47,6 +48,27 @@ def attachment_dir(uploads_root: Path, key: str) -> Path:
     target = uploads_root / "messages" / key
     target.mkdir(parents=True, exist_ok=True)
     return target
+
+
+def new_conversation_id() -> str:
+    return uuid.uuid4().hex
+
+
+def active_conversation_id(db: Session, thread_key_str: str) -> str | None:
+    """Return the conversation_id for the most-recent NON-archived message in
+    this thread_key, or None if there's no live conversation (the previous
+    one was archived, or no messages exist yet).
+    """
+    row = (
+        db.query(Message.conversation_id)
+        .filter(
+            Message.thread_key == thread_key_str,
+            Message.archived.is_(False),
+        )
+        .order_by(Message.created_at.desc())
+        .first()
+    )
+    return row[0] if row else None
 
 
 def preview(body: str | None, has_attachment: bool) -> str | None:

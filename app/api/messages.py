@@ -29,15 +29,19 @@ from sse_starlette.sse import EventSourceResponse
 
 from ..core.config import get_settings
 from ..core.db import get_db
-from ..core.deps import get_current_user
+from ..core.deps import get_current_user, get_user_for_stream
 from ..core.events import publish, subscribe, unsubscribe
 from ..models import Message, User
 from ..schemas.message import MessageOut, ThreadOut
+from ..services.notifications import emit as emit_notification
+from ..services.notifications import user_channel as notif_channel
 from ..services.messages import (
     ALLOWED_MIME,
     MAX_ATTACHMENT_BYTES,
+    active_conversation_id,
     attachment_dir,
     find_admin_recipient,
+    new_conversation_id,
     preview,
     safe_attachment_name,
     thread_key,
@@ -64,6 +68,7 @@ def _to_out(msg: Message, sender_name: str) -> MessageOut:
         read_at=msg.read_at,
         created_at=msg.created_at,
         archived=msg.archived,
+        conversation_id=msg.conversation_id,
     )
 
 
@@ -88,12 +93,15 @@ def _resolve_other_user(
 def list_threads(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> list[ThreadOut]:
-    msgs = (
-        db.query(Message)
-        .filter(or_(Message.sender_id == user.id, Message.recipient_id == user.id))
-        .order_by(Message.created_at.asc())
-        .all()
+    q = db.query(Message).filter(
+        or_(Message.sender_id == user.id, Message.recipient_id == user.id)
     )
+    # Non-admins should never see archived threads — once an admin archives a
+    # support conversation, the user gets a "fresh" thread and can send a new
+    # opening message. Admins still see archived threads and can toggle.
+    if user.role != "admin":
+        q = q.filter(Message.archived.is_(False))
+    msgs = q.order_by(Message.created_at.asc()).all()
     if not msgs and user.role != "admin":
         admin = find_admin_recipient(db)
         if admin and admin.id != user.id:
@@ -101,6 +109,7 @@ def list_threads(
             return [
                 ThreadOut(
                     thread_key=thread_key(user.id, admin.id),
+                    conversation_id="",  # placeholder — created on first send
                     other_user_id=admin.id,
                     other_user_name=admin.display_name,
                     other_user_role=admin.role,
@@ -120,12 +129,13 @@ def list_threads(
     user_ids.discard(user.id)
     others = {u.id: u for u in db.query(User).filter(User.id.in_(user_ids)).all()}
 
+    # One row per conversation_id (each archive seals its own).
     grouped: dict[str, list[Message]] = {}
     for m in msgs:
-        grouped.setdefault(m.thread_key, []).append(m)
+        grouped.setdefault(m.conversation_id, []).append(m)
 
     out: list[ThreadOut] = []
-    for key, items in grouped.items():
+    for cid, items in grouped.items():
         last = items[-1]
         other_id = last.sender_id if last.sender_id != user.id else last.recipient_id
         other = others.get(other_id)
@@ -135,7 +145,8 @@ def list_threads(
         archived_thread = all(m.archived for m in items)
         out.append(
             ThreadOut(
-                thread_key=key,
+                thread_key=last.thread_key,
+                conversation_id=cid,
                 other_user_id=other.id,
                 other_user_name=other.display_name,
                 other_user_role=other.role,
@@ -153,17 +164,29 @@ def list_threads(
 @router.get("", response_model=list[MessageOut])
 def list_messages(
     with_user_id: int | None = Query(default=None),
+    conversation_id: str | None = Query(default=None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> list[MessageOut]:
+    """Return messages for a single conversation.
+
+    If `conversation_id` is supplied it's used directly (admins drill into
+    archived ones this way). Otherwise we return messages for the current
+    *active* conversation between the caller and the other user — for
+    non-admins that means "what they should see right now" (no archived
+    history).
+    """
     other = _resolve_other_user(db, user, with_user_id)
     key = thread_key(user.id, other.id)
-    rows = (
-        db.query(Message)
-        .filter(Message.thread_key == key)
-        .order_by(Message.created_at.asc())
-        .all()
-    )
+    q = db.query(Message).filter(Message.thread_key == key)
+    if conversation_id:
+        q = q.filter(Message.conversation_id == conversation_id)
+    else:
+        active = active_conversation_id(db, key)
+        if active is None:
+            return []
+        q = q.filter(Message.conversation_id == active)
+    rows = q.order_by(Message.created_at.asc()).all()
     name_by_id = {user.id: user.display_name, other.id: other.display_name}
     return [_to_out(m, name_by_id.get(m.sender_id, "")) for m in rows]
 
@@ -186,11 +209,17 @@ async def send_message(
         raise HTTPException(status_code=400, detail="Message must have a body or an attachment")
 
     key = thread_key(user.id, other.id)
+    # Reuse the live conversation if there is one; otherwise start a new
+    # epoch. Admin archiving the previous conversation will have left
+    # active_conversation_id() returning None, so the next user message
+    # opens a fresh thread row instead of reactivating the archive.
+    cid = active_conversation_id(db, key) or new_conversation_id()
 
     msg = Message(
         sender_id=user.id,
         recipient_id=other.id,
         thread_key=key,
+        conversation_id=cid,
         body=body_clean,
     )
     db.add(msg)
@@ -236,6 +265,7 @@ async def send_message(
     payload = {
         "id": msg.id,
         "thread_key": key,
+        "conversation_id": msg.conversation_id,
         "sender_id": msg.sender_id,
         "sender_name": user.display_name,
         "recipient_id": msg.recipient_id,
@@ -251,32 +281,35 @@ async def send_message(
 def unread_count(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> UnreadCountOut:
-    n = (
-        db.query(Message)
-        .filter(Message.recipient_id == user.id, Message.read_at.is_(None))
-        .count()
+    q = db.query(Message).filter(
+        Message.recipient_id == user.id, Message.read_at.is_(None)
     )
-    return UnreadCountOut(unread=n)
+    # Non-admins can't open archived threads, so unread messages inside them
+    # would otherwise stick the badge at a value the user can't clear.
+    # Admins keep counting archived unreads since they can drill in.
+    if user.role != "admin":
+        q = q.filter(Message.archived.is_(False))
+    return UnreadCountOut(unread=q.count())
 
 
 @router.post("/read", status_code=status.HTTP_204_NO_CONTENT)
 def mark_thread_read(
     with_user_id: int | None = Query(default=None),
+    conversation_id: str | None = Query(default=None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> Response:
     other = _resolve_other_user(db, user, with_user_id)
     key = thread_key(user.id, other.id)
     now = datetime.now(timezone.utc)
-    (
-        db.query(Message)
-        .filter(
-            Message.thread_key == key,
-            Message.recipient_id == user.id,
-            Message.read_at.is_(None),
-        )
-        .update({"read_at": now}, synchronize_session=False)
+    q = db.query(Message).filter(
+        Message.thread_key == key,
+        Message.recipient_id == user.id,
+        Message.read_at.is_(None),
     )
+    if conversation_id:
+        q = q.filter(Message.conversation_id == conversation_id)
+    q.update({"read_at": now}, synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -293,6 +326,107 @@ def archive_message(
         raise HTTPException(status_code=404, detail="Not found")
     msg.archived = archived
     db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/conversations/{conversation_id}/archive", status_code=status.HTTP_204_NO_CONTENT
+)
+async def archive_conversation(
+    conversation_id: str,
+    archived: bool = Query(default=True),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> Response:
+    """Archive a single conversation by id. Once archived, future messages
+    from the user start a brand-new conversation_id — the archived one
+    becomes a frozen log and never reactivates. Unarchiving is not supported.
+    """
+    if not archived:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Conversations cannot be unarchived; users start a fresh thread by sending a new message.",
+        )
+    sample = (
+        db.query(Message)
+        .filter(Message.conversation_id == conversation_id)
+        .first()
+    )
+    if not sample:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    if sample.sender_id != user.id and sample.recipient_id != user.id:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    other_id = (
+        sample.recipient_id if sample.sender_id == user.id else sample.sender_id
+    )
+    other = db.get(User, other_id)
+
+    (
+        db.query(Message)
+        .filter(Message.conversation_id == conversation_id)
+        .update({"archived": archived}, synchronize_session=False)
+    )
+
+    # The non-admin can never reopen an archived thread to mark it read, so
+    # any inbound messages addressed to them get marked read on archive.
+    # Without this, the messages tab badge stays stuck at the unread count
+    # of the now-invisible archived thread.
+    non_admin_id = user.id if user.role != "admin" else (other.id if other else None)
+    if non_admin_id is not None:
+        (
+            db.query(Message)
+            .filter(
+                Message.conversation_id == conversation_id,
+                Message.recipient_id == non_admin_id,
+                Message.read_at.is_(None),
+            )
+            .update({"read_at": datetime.now(timezone.utc)}, synchronize_session=False)
+        )
+
+    note_payload: dict | None = None
+    if (
+        archived
+        and user.role == "admin"
+        and other is not None
+        and other.id != user.id
+        and other.role != "admin"
+    ):
+        note = emit_notification(
+            db,
+            user_id=other.id,
+            kind="thread_archived",
+            title="Support conversation archived",
+            body=(
+                "An admin closed your support conversation. You can open a "
+                "new one any time by sending a new message."
+            ),
+            i18n_key="thread_archived",
+        )
+        note_payload = {
+            "id": note.id,
+            "kind": note.kind,
+            "title": note.title,
+            "analysis_id": None,
+        }
+
+    db.commit()
+
+    if note_payload and other is not None:
+        await publish(notif_channel(other.id), note_payload)
+
+    # Tell both peers' messages streams that the conversation state changed,
+    # so the open Messages page re-fetches threads + messages immediately
+    # (and the user's archived history disappears without a navigation).
+    archive_event = {
+        "kind": "conversation_archived",
+        "conversation_id": conversation_id,
+        "archived": archived,
+    }
+    if other is not None and other.id != user.id:
+        await publish(user_channel(other.id), archive_event)
+    await publish(user_channel(user.id), archive_event)
+
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -322,7 +456,7 @@ def download_attachment(
 
 
 @router.get("/stream")
-async def messages_stream(user: User = Depends(get_current_user)):
+async def messages_stream(user: User = Depends(get_user_for_stream)):
     channel = user_channel(user.id)
     queue = await subscribe(channel)
 

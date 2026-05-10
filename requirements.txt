@@ -14,6 +14,7 @@ aiofiles
 sse-starlette
 email-validator
 httpx>=0.27,<1
+aiosmtplib>=3.0,<4
 reportlab>=4.0,<5
 pillow>=10.0
 arabic-reshaper>=3.0

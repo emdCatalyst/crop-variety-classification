@@ -1,27 +1,31 @@
 # Deploying Agro-Vision
 
-This guide assumes you received a prebuilt Docker image tarball
-(`agrovision.tar.gz`) plus this repo's `docker-compose.yml` and
-`.env.prod.example`. You do **not** need git, Node, or Python on the
-server — only Docker.
+This guide assumes you received `docker-compose.yml`, `.env.prod.example`,
+and a GitHub Personal Access Token granting read access to the
+`ghcr.io/emdcatalyst/agrovision` container image. You do **not** need
+git, Node, or Python on the server — only Docker.
 
 ## 1. Prerequisites
 
 - A Linux server with Docker Engine 24+ and the Compose plugin
   (`docker compose version` should print a v2 string).
-- ~3 GB free disk for the image, plus whatever you'll need for
+- ~2.5 GB free disk for the image, plus whatever you'll need for
   uploads and rendered maps.
 - (Recommended) A public domain pointed at the server and a reverse
   proxy in front (Caddy or nginx) for HTTPS — see §6.
 
-## 2. Load the prebuilt image
+## 2. Authenticate to the image registry
 
-Copy `agrovision.tar.gz` to the server, then:
+The image is hosted in GitHub Container Registry as a private package.
+Log Docker in once using the read-only token you were given:
 
 ```bash
-gunzip -c agrovision.tar.gz | docker load
-docker images | grep agrovision   # should list agrovision:latest
+echo "<YOUR_TOKEN>" | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
 ```
+
+The credentials are stored in `~/.docker/config.json` and persist across
+reboots. Pulling the image happens automatically on the first
+`docker compose up`.
 
 ## 3. Lay out files
 
@@ -90,16 +94,17 @@ With HTTPS in place, keep `COOKIE_SECURE=true` in `.env.prod`.
 
 ## 7. Updates
 
-When you receive a new image tarball:
+When a new image version is published:
 
 ```bash
-gunzip -c agrovision-NEW.tar.gz | docker load
+docker compose pull         # downloads only the changed layers
 docker compose up -d        # recreates the container with the new image
 ```
 
-User data (DB, uploads, maps) lives in the bind-mounted directories
-and survives container recreation. Migrations run automatically on
-startup.
+Layer-diff pulls mean a typical update transfers tens of megabytes,
+not the full image. User data (DB, uploads, maps) lives in the
+bind-mounted directories and survives container recreation. Migrations
+run automatically on startup.
 
 ## 8. Backups
 
@@ -109,6 +114,10 @@ S3 (or any offsite location) is sufficient.
 
 ## Troubleshooting
 
+- **`docker compose up` fails with "denied" or "unauthorized" pulling
+  the image** — your GHCR login expired or the token doesn't have
+  `read:packages` scope. Re-run the `docker login ghcr.io ...` step
+  from §2 with a fresh token.
 - **`docker compose up` fails immediately** — check `.env.prod`
   exists and `JWT_SECRET` is set.
 - **Browser shows "not secure" or login bounces** — `COOKIE_SECURE=true`

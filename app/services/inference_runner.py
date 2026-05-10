@@ -23,6 +23,15 @@ log = logging.getLogger("agrovision.inference")
 _engine = None
 _engine_lock = threading.Lock()
 
+# In-memory tracker for the currently-executing inference stage per analysis.
+# Lets a client that connects mid-inference learn which stage is live (so the
+# timeline UI doesn't reset to "queued" when the user navigates back).
+_current_stage: dict[int, str] = {}
+
+
+def get_current_stage(analysis_id: int) -> str | None:
+    return _current_stage.get(analysis_id)
+
 
 def _get_engine():
     global _engine
@@ -43,6 +52,14 @@ def _get_engine():
 
 
 async def _emit(channel: str, stage: str, **kwargs) -> None:
+    # Channel format: "analysis:<id>". Track the live stage so late-joining
+    # SSE clients know where the pipeline is.
+    if channel.startswith("analysis:"):
+        try:
+            aid = int(channel.split(":", 1)[1])
+            _current_stage[aid] = stage
+        except (ValueError, IndexError):
+            pass
     await publish(channel, {"stage": stage, **kwargs})
     delay = get_settings().dev_stage_delay_s
     if delay > 0:
@@ -85,7 +102,16 @@ async def run_analysis(analysis_id: int) -> None:
 
         map_filename = Path(artifacts.map_png_path).name
         map_url = f"/static/maps/{map_filename}"
+        confidence_filename = (
+            Path(artifacts.confidence_map_path).name
+            if artifacts.confidence_map_path
+            else None
+        )
+        confidence_url = (
+            f"/static/maps/{confidence_filename}" if confidence_filename else None
+        )
 
+        owner_lang = (analysis.user.language if analysis.user else "en") or "en"
         assessment = await assess_health_ai(
             HealthContext(
                 analysis_id=analysis.id,
@@ -99,6 +125,7 @@ async def run_analysis(analysis_id: int) -> None:
                 heuristic_health_status=artifacts.health_status,
                 heuristic_trajectory=artifacts.trajectory,
                 heuristic_advice=artifacts.advice,
+                language=owner_lang,
             )
         )
         log.info(
@@ -120,21 +147,31 @@ async def run_analysis(analysis_id: int) -> None:
             temporal_trend=float(artifacts.temporal_trend),
             map_png_path=artifacts.map_png_path,
             map_url=map_url,
+            confidence_png_path=artifacts.confidence_map_path or None,
+            confidence_url=confidence_url,
+            legend=dict(artifacts.class_legend) if artifacts.class_legend else None,
             geotiff_path=artifacts.geotiff_path or None,
             class_distribution=artifacts.class_distribution,
         )
         db.add(result)
         analysis.status = AnalysisStatus.completed
+        crop_label = artifacts.predicted_crop.replace("_", " ")
         note = emit_notification(
             db,
             user_id=analysis.user_id,
             kind="analysis_completed",
             title=f"Analysis “{analysis.source_name}” completed",
             body=(
-                f"Predicted crop: {artifacts.predicted_crop.replace('_', ' ')}. "
+                f"Predicted crop: {crop_label}. "
                 f"Health: {assessment.health_status}."
             ),
             analysis_id=analysis.id,
+            i18n_key="analysis_completed",
+            i18n_params={
+                "name": analysis.source_name,
+                "crop": crop_label,
+                "health": assessment.health_status,
+            },
         )
         db.commit()
 
@@ -148,6 +185,7 @@ async def run_analysis(analysis_id: int) -> None:
             },
         )
         await _emit(channel, "done", message="Analysis complete", result_id=result.id)
+        _current_stage.pop(analysis_id, None)
     except Exception as exc:
         log.exception("analysis %s failed", analysis_id)
         note_payload: dict | None = None
@@ -163,6 +201,11 @@ async def run_analysis(analysis_id: int) -> None:
                     title=f"Analysis “{analysis.source_name}” failed",
                     body=str(exc)[:500],
                     analysis_id=analysis.id,
+                    i18n_key="analysis_failed",
+                    i18n_params={
+                        "name": analysis.source_name,
+                        "error": str(exc)[:500],
+                    },
                 )
                 db.commit()
                 note_payload = {
@@ -177,5 +220,6 @@ async def run_analysis(analysis_id: int) -> None:
         if note_payload:
             await publish(notifications_channel(note_payload["user_id"]), note_payload)
         await _emit(channel, "failed", message=str(exc))
+        _current_stage.pop(analysis_id, None)
     finally:
         db.close()

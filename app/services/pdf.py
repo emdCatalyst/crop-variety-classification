@@ -124,9 +124,87 @@ _STRINGS = {
 }
 
 
+# Localized labels for the canonical health_status / trajectory enum codes.
+# Mirrors `result.health_codes` and `result.trajectory_codes` in the frontend
+# i18n bundles. Legacy free-text values fall through to the raw string.
+_CODE_LABELS: dict[str, dict[str, dict[str, str]]] = {
+    "en": {
+        "health": {
+            "CRITICAL": "Critical",
+            "STRESSED": "Stressed",
+            "MODERATE": "Moderate",
+            "HEALTHY": "Healthy",
+            "VIGOROUS": "Vigorous",
+        },
+        "trajectory": {
+            "STRONG_DECLINE": "Strongly declining",
+            "DECLINE": "Declining",
+            "STABLE": "Stable",
+            "GROWTH": "Growing",
+            "STRONG_GROWTH": "Strong growth",
+        },
+    },
+    "fr": {
+        "health": {
+            "CRITICAL": "Critique",
+            "STRESSED": "En détresse",
+            "MODERATE": "Modéré",
+            "HEALTHY": "Sain",
+            "VIGOROUS": "Vigoureux",
+        },
+        "trajectory": {
+            "STRONG_DECLINE": "Déclin marqué",
+            "DECLINE": "En déclin",
+            "STABLE": "Stable",
+            "GROWTH": "En croissance",
+            "STRONG_GROWTH": "Forte croissance",
+        },
+    },
+    "ar": {
+        "health": {
+            "CRITICAL": "حرجة",
+            "STRESSED": "تحت ضغط",
+            "MODERATE": "متوسطة",
+            "HEALTHY": "سليمة",
+            "VIGOROUS": "نشطة",
+        },
+        "trajectory": {
+            "STRONG_DECLINE": "تراجع حاد",
+            "DECLINE": "في تراجع",
+            "STABLE": "مستقرة",
+            "GROWTH": "في نمو",
+            "STRONG_GROWTH": "نمو قوي",
+        },
+    },
+}
+
+
 def _t(lang: str, key: str) -> str:
     table = _STRINGS.get(lang, _STRINGS["en"])
     return table.get(key, _STRINGS["en"].get(key, key))
+
+
+# Legacy free-text trajectory strings written before the enum migration. Used
+# to coerce stored values onto the new canonical codes so older reports still
+# render with localized chips.
+_LEGACY_TRAJECTORY_ALIAS: dict[str, str] = {
+    "DECLINING (significant drop across season)": "STRONG_DECLINE",
+    "SLIGHTLY DECLINING": "DECLINE",
+    "STABLE": "STABLE",
+    "GROWING": "GROWTH",
+    "STRONG GROWTH": "STRONG_GROWTH",
+}
+
+
+def _code_label(lang: str, kind: str, value: str) -> str:
+    table = _CODE_LABELS.get(lang, _CODE_LABELS["en"]).get(kind, {})
+    if value in table:
+        return table[value]
+    if kind == "trajectory":
+        canonical = _LEGACY_TRAJECTORY_ALIAS.get(value.strip().upper())
+        if canonical and canonical in table:
+            return table[canonical]
+    return value
 
 
 def _render_text(text: str, lang: str) -> str:
@@ -239,8 +317,8 @@ def build_report(analysis: Analysis, lang: str = "en") -> bytes:
     flow.append(p("predicted_crop", "h2"))
     summary_rows = [
         kv("predicted_crop", result.predicted_crop.replace("_", " ")),
-        kv("health", result.health_status),
-        kv("trajectory", result.trajectory),
+        kv("health", _code_label(lang, "health", result.health_status)),
+        kv("trajectory", _code_label(lang, "trajectory", result.trajectory)),
         kv("confidence", f"{result.mean_confidence * 100:.1f}%"),
         kv("ndvi", f"{result.mean_ndvi:.3f}"),
         kv("ndre", f"{result.mean_ndre:.3f}"),

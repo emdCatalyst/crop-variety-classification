@@ -1,6 +1,6 @@
 services:
   agrovision:
-    image: agrovision:latest
+    image: ghcr.io/emdcatalyst/agrovision:latest
     container_name: agrovision
     restart: unless-stopped
     ports:

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from ..core.db import get_db
-from ..core.deps import get_current_user
+from ..core.deps import get_current_user, get_user_for_stream
 from ..core.events import subscribe, unsubscribe
 from ..models import Notification, User
 from ..services.notifications import user_channel
@@ -25,6 +25,8 @@ class NotificationOut(BaseModel):
     analysis_id: int | None
     read_at: datetime | None
     created_at: datetime
+    i18n_key: str | None = None
+    i18n_params: dict | None = None
 
     class Config:
         from_attributes = True
@@ -105,7 +107,7 @@ def delete_notification(
 
 
 @router.get("/stream")
-async def notifications_stream(user: User = Depends(get_current_user)):
+async def notifications_stream(user: User = Depends(get_user_for_stream)):
     """Server-Sent Events feed of new notifications for the current user."""
     channel = user_channel(user.id)
     queue = await subscribe(channel)

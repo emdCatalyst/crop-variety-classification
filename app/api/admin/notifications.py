@@ -22,6 +22,40 @@ class BroadcastOut(BaseModel):
     sent: int
 
 
+class NotifyIn(BaseModel):
+    user_id: int
+    title: str = Field(min_length=1, max_length=200)
+    body: str = Field(min_length=1)
+
+
+class NotifyOut(BaseModel):
+    id: int
+
+
+@router.post("/notify", response_model=NotifyOut, status_code=status.HTTP_201_CREATED)
+async def notify_user(
+    payload: NotifyIn,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+) -> NotifyOut:
+    target = db.get(User, payload.user_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    note = emit(
+        db,
+        user_id=target.id,
+        kind="admin_notice",
+        title=payload.title.strip()[:200],
+        body=payload.body.strip(),
+    )
+    db.commit()
+    await publish(
+        user_channel(target.id),
+        {"id": note.id, "kind": note.kind, "title": note.title, "analysis_id": None},
+    )
+    return NotifyOut(id=note.id)
+
+
 @router.post("/broadcast", response_model=BroadcastOut, status_code=status.HTTP_201_CREATED)
 async def broadcast(
     payload: BroadcastIn,

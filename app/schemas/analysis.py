@@ -26,7 +26,9 @@ class ResultOut(BaseModel):
     mean_savi: float
     temporal_trend: float
     map_url: str
+    confidence_url: str | None = None
     class_distribution: dict
+    legend: dict | None = None
     farmer_notes: str | None = None
     observed_at: datetime | None = None
 

@@ -41,6 +41,14 @@ class Settings(BaseSettings):
     groq_model: str = "llama-3.3-70b-versatile"
     health_ai_timeout_s: float = 8.0
 
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_from_email: str | None = None
+    smtp_from_name: str = "Agro-Vision"
+    email_code_ttl_minutes: int = 15
+
     cors_origins: list[str] = []
 
     # Dev knob: artificial delay (seconds) inserted before each inference

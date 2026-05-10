@@ -12,10 +12,12 @@ export type MessageRow = {
   read_at: string | null;
   created_at: string;
   archived: boolean;
+  conversation_id: string;
 };
 
 export type ThreadRow = {
   thread_key: string;
+  conversation_id: string;
   other_user_id: number;
   other_user_name: string;
   other_user_role: string;
@@ -31,9 +33,15 @@ export async function listThreads(): Promise<ThreadRow[]> {
   return data;
 }
 
-export async function listMessages(withUserId?: number | null): Promise<MessageRow[]> {
+export async function listMessages(params?: {
+  withUserId?: number | null;
+  conversationId?: string | null;
+}): Promise<MessageRow[]> {
+  const q: Record<string, string | number> = {};
+  if (params?.withUserId != null) q.with_user_id = params.withUserId;
+  if (params?.conversationId) q.conversation_id = params.conversationId;
   const { data } = await api.get<MessageRow[]>("/messages", {
-    params: withUserId != null ? { with_user_id: withUserId } : undefined,
+    params: Object.keys(q).length ? q : undefined,
   });
   return data;
 }
@@ -56,12 +64,25 @@ export async function unreadCount(): Promise<number> {
   return data.unread;
 }
 
-export async function markThreadRead(withUserId?: number | null): Promise<void> {
-  await api.post(
-    "/messages/read",
-    null,
-    withUserId != null ? { params: { with_user_id: withUserId } } : undefined
-  );
+export async function markThreadRead(params: {
+  withUserId?: number | null;
+  conversationId?: string | null;
+}): Promise<void> {
+  const q: Record<string, string | number> = {};
+  if (params.withUserId != null) q.with_user_id = params.withUserId;
+  if (params.conversationId) q.conversation_id = params.conversationId;
+  await api.post("/messages/read", null, {
+    params: Object.keys(q).length ? q : undefined,
+  });
+}
+
+export async function archiveConversation(
+  conversationId: string,
+  archived: boolean
+): Promise<void> {
+  await api.post(`/messages/conversations/${conversationId}/archive`, null, {
+    params: { archived },
+  });
 }
 
 export function attachmentUrl(messageId: number): string {

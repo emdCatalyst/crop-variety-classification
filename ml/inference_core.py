@@ -8,7 +8,7 @@ import os
 import re
 import glob
 import base64
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, Optional, Sequence
 
@@ -221,6 +221,23 @@ def build_class_palette(class_names):
     return ListedColormap(colors.tolist()), colors
 
 
+def _rgb_to_hex(rgb) -> str:
+    r, g, b = (int(round(float(c) * 255)) for c in rgb[:3])
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def class_color_legend(class_names, names_subset, class_colors) -> dict:
+    """Map each class name in `names_subset` to its palette color as #rrggbb."""
+    name_to_idx = {n: i for i, n in enumerate(class_names)}
+    out: dict[str, str] = {}
+    for n in names_subset:
+        idx = name_to_idx.get(n)
+        if idx is None:
+            continue
+        out[n] = _rgb_to_hex(class_colors[idx])
+    return out
+
+
 def shorten(label, n=30):
     return label if len(label) <= n else label[: n - 3] + "..."
 
@@ -383,6 +400,13 @@ def image_to_base64(path):
         return base64.b64encode(f.read()).decode("utf-8")
 
 
+def _save_clean_png(fig, ax, out_path):
+    """Save just the imshow content — no title, axes, padding, or chrome."""
+    ax.axis("off")
+    fig.savefig(out_path, bbox_inches="tight", pad_inches=0, dpi=150)
+    plt.close(fig)
+
+
 def render_classification_map(
     raw_hard_class_map,
     display_prob_cube,
@@ -396,28 +420,26 @@ def render_classification_map(
     smooth_render=False,
     subtitle=None,
 ):
+    """Save the classification map and the confidence heatmap as separate
+    chrome-less PNGs. Returns (class_map_path, confidence_map_path).
+    """
     os.makedirs(out_dir, exist_ok=True)
     safe_name = sanitize_name(source_name)
     cmap, class_colors = build_class_palette(class_names)
 
     if smooth_render:
         vis_main = probability_rgb(display_prob_cube, class_colors, softness_gamma=1.0)
-        sigma_note = f"  (probability-flow Gaussian display sigma={sigma:.1f})"
-        conf_title = "Smoothed Confidence Heatmap"
         map_interp = "bicubic"
         conf_interp = "bicubic"
     else:
         vis_main = raw_hard_class_map
-        sigma_note = ""
-        conf_title = "Pixel-space Confidence Heatmap"
         map_interp = "nearest"
         conf_interp = "nearest"
 
-    ncols = 2 if with_confidence else 1
-    fig, axes = plt.subplots(1, ncols, figsize=(8 * ncols, 7), dpi=150)
-    ax_map = axes[0] if with_confidence else axes
-    ax_conf = axes[1] if with_confidence else None
+    suffix = f"_pixelsmooth{sigma:.1f}" if smooth_render else "_raw"
 
+    # 1) Classification map — pure imshow, no axes, no titles, no legend.
+    fig_map, ax_map = plt.subplots(figsize=(8, 8), dpi=150)
     if smooth_render:
         ax_map.imshow(vis_main, interpolation=map_interp)
     else:
@@ -428,73 +450,22 @@ def render_classification_map(
             vmin=0,
             vmax=len(class_names) - 1,
         )
+    map_path = os.path.join(out_dir, f"classification_map_{safe_name}{suffix}.png")
+    _save_clean_png(fig_map, ax_map, map_path)
 
-    subtitle = subtitle or f"Source: {shorten(source_name, 26)}"
-    ax_map.set_title(f"Classification Map", fontsize=10, fontweight="bold")
-    ax_map.axis("off")
-
-    vals, counts = np.unique(raw_hard_class_map, return_counts=True)
-    order = np.argsort(counts)[::-1]
-    vals = vals[order]
-    dominant = int(vals[0])
-
-    handles = [
-        mpatches.Patch(color=class_colors[i], label=shorten(class_names[i], 36))
-        for i in vals[:12]
-    ]
-    ax_map.legend(
-        handles=handles,
-        loc="lower right",
-        fontsize=7,
-        title="Predicted class",
-        title_fontsize=8.5,
-        framealpha=0.92,
+    # 2) Confidence heatmap — pure imshow, no chrome.
+    fig_conf, ax_conf = plt.subplots(figsize=(8, 8), dpi=150)
+    ax_conf.imshow(
+        conf_map_for_display,
+        cmap="RdYlGn",
+        vmin=0.0,
+        vmax=1.0,
+        interpolation=conf_interp,
     )
+    conf_path = os.path.join(out_dir, f"confidence_map_{safe_name}{suffix}.png")
+    _save_clean_png(fig_conf, ax_conf, conf_path)
 
-    info = (
-        f"Dominant class: {shorten(class_names[dominant], 26)}\n"\
-        f"{subtitle}\n"
-        f"Avg. confidence: {raw_pixel_conf_map.mean():.2f}\n"
-        f"Pixel map size : {raw_hard_class_map.shape[1]} x {raw_hard_class_map.shape[0]}"
-        
-    )
-    ax_map.text(
-        0.01,
-        0.99,
-        info,
-        transform=ax_map.transAxes,
-        va="top",
-        ha="left",
-        fontsize=7.5,
-        color="white",
-        bbox=dict(boxstyle="round,pad=0.3", fc="#111111", alpha=0.82),
-    )
-
-    if ax_conf is not None:
-        im2 = ax_conf.imshow(
-            conf_map_for_display,
-            cmap="RdYlGn",
-            vmin=0.0,
-            vmax=1.0,
-            interpolation=conf_interp,
-        )
-        ax_conf.set_title(conf_title, fontsize=10, fontweight="bold")
-        ax_conf.axis("off")
-        cbar = plt.colorbar(im2, ax=ax_conf, fraction=0.046, pad=0.04)
-        cbar.set_label("Confidence (0 to 1)", fontsize=8)
-
-    plt.suptitle(
-        f"{source_name}\n{sigma_note}",
-        fontsize=11,
-        y=1.01,
-    )
-    plt.tight_layout()
-
-    suffix = f"_pixelsmooth{sigma:.1f}" if smooth_render else "_raw"
-    out_png = os.path.join(out_dir, f"classification_map_{safe_name}{suffix}.png")
-    plt.savefig(out_png, bbox_inches="tight")
-    plt.close()
-    return out_png
+    return map_path, conf_path
 
 
 @dataclass
@@ -506,8 +477,10 @@ class InferenceArtifacts:
     mean_confidence: float
     mean_ndvi: float
     map_png_path: str
+    confidence_map_path: str
     geotiff_path: str
     class_distribution: Dict[str, float]
+    class_legend: Dict[str, str] = field(default_factory=dict)
     ground_truth_crop: str = ""
     plot_id: Optional[int] = None
     ndre_mean: float = 0.0
@@ -530,6 +503,7 @@ class InferenceArtifacts:
             "mean_savi": round(float(self.savi_mean), 4),
             "temporal_trend": round(float(self.temporal_trend), 4),
             "classification_map_path": self.map_png_path,
+            "confidence_map_path": self.confidence_map_path,
             "classification_geotiff_path": self.geotiff_path,
             "class_distribution": self.class_distribution,
         }
@@ -615,6 +589,11 @@ class InferenceEngine:
             for v, c in zip(vals[:10], counts[:10])
         }
 
+        _, palette_colors = build_class_palette(self.class_names)
+        class_legend = class_color_legend(
+            self.class_names, list(class_distribution.keys()), palette_colors
+        )
+
         ndvi_series = plot_data[:, -3, :, :].mean(axis=(1, 2))
         ndre_series = plot_data[:, -2, :, :].mean(axis=(1, 2))
         savi_series = plot_data[:, -1, :, :].mean(axis=(1, 2))
@@ -634,7 +613,7 @@ class InferenceEngine:
         )
 
         subtitle = f"Ground truth: {shorten(ground_truth_crop, 26)}" if ground_truth_crop else f"Source: {shorten(source_name, 26)}"
-        map_png_path = render_classification_map(
+        map_png_path, confidence_map_path = render_classification_map(
             raw_hard_class_map=raw_hard_class_map,
             display_prob_cube=display_prob_cube,
             conf_map_for_display=conf_map_for_display,
@@ -668,8 +647,10 @@ class InferenceEngine:
             temporal_trend=temporal_trend,
             trajectory=health["trajectory"],
             map_png_path=map_png_path,
+            confidence_map_path=confidence_map_path,
             geotiff_path=geotiff_path,
             class_distribution=class_distribution,
+            class_legend=class_legend,
         )
 
     def infer_plot(self, plot_id: int, smooth=False, sigma=3.0, with_confidence=False, save_geotiff=True):

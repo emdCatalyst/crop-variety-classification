@@ -245,4 +245,6 @@ Never commit your `.env` file.
 
 ## License
 
-Released for research and demonstration purposes. The MuST-C dataset is licensed separately under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) by its authors at the University of Bonn; model weights trained on it should credit the dataset as described in [Dataset and acknowledgements](#dataset-and-acknowledgements).
+The source code is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). Commercial use is not permitted without a separate written agreement with the author.
+
+The MuST-C dataset is licensed separately under CC BY 4.0 by its authors at the University of Bonn. See [Dataset and acknowledgements](#dataset-and-acknowledgements).

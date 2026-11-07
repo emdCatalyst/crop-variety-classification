@@ -1,16 +1,12 @@
 services:
   agrovision:
-    image: ghcr.io/emdcatalyst/agrovision:latest
-    container_name: agrovision
-    restart: unless-stopped
+    build: .
+    container_name: cropvariety
     ports:
       - "7860:7860"
     env_file:
-      - .env.prod
+      - .env
     volumes:
-      # SQLite DB lives here (DATABASE_URL points at /app/data/agrovision.db).
       - ./data:/app/data
-      # Uploaded GeoTIFF series — required to re-run inference on demand.
       - ./uploads:/app/uploads
-      # Rendered classification + confidence PNGs served at /static/maps/*.
       - ./maps:/app/app/static/maps
